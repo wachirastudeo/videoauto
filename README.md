@@ -59,6 +59,14 @@ npm run start
 
 เปิดเว็บเบราว์เซอร์ไปที่: **http://localhost:3000**
 
+### Sync your signed-in TikTok Showcase
+
+1. In normal Google Chrome, open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select this project's `chrome-extension/` folder. This one-time bridge can read your signed-in TikTok Showcase and send product data to the app running on `localhost:3000`. It does not copy cookies or tokens into the app.
+2. Open `http://localhost:3000` in that same Chrome profile and select **Sync Showcase**. The bridge reads all Showcase pages and imports real product IDs. If TikTok needs login, it opens the Showcase page; sign in there and select **Sync Showcase** again.
+3. If the Showcase tab was already open when you installed the extension, reload it once.
+
+The bridge uses TikTok Studio's page API, which may change. Sync reports errors instead of substituting mock products. The local app must be trusted because it receives your product list.
+
 ---
 
 ## 📁 โครงสร้างโปรเจกต์

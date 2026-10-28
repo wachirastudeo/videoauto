@@ -79,10 +79,6 @@ interface AppSettings {
   include_product_id: boolean;
   sequence_number: number;
   storage_root: string;
-  tiktok_api_mode: string;
-  tiktok_api_url: string;
-  tiktok_access_token: string;
-  tiktok_cookie: string;
 }
 
 export default function Home() {
@@ -173,13 +169,39 @@ export default function Home() {
   const handleSyncShowcase = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/showcase/sync', { method: 'POST' });
-      const data = await res.json();
+      const data = await new Promise<{ success: boolean; message?: string; error?: string }>((resolve) => {
+        let bridgeReady = false;
+        const readyTimer = window.setTimeout(() => {
+          if (!bridgeReady) {
+            cleanup();
+            resolve({ success: false, error: 'Install the VideoAuto Showcase Bridge extension in Chrome, then try again.' });
+          }
+        }, 2000);
+        const resultTimer = window.setTimeout(() => {
+          cleanup();
+          resolve({ success: false, error: 'Showcase sync timed out. Try again.' });
+        }, 90000);
+        const cleanup = () => {
+          window.clearTimeout(readyTimer);
+          window.clearTimeout(resultTimer);
+          window.removeEventListener('message', onMessage);
+        };
+        const onMessage = (event: MessageEvent) => {
+          if (event.source !== window || event.origin !== window.location.origin || event.data?.source !== 'videoauto-extension') return;
+          if (event.data.type === 'SYNC_STARTED') bridgeReady = true;
+          if (event.data.type === 'SYNC_RESULT') {
+            cleanup();
+            resolve(event.data);
+          }
+        };
+        window.addEventListener('message', onMessage);
+        window.postMessage({ source: 'videoauto-app', type: 'SYNC_SHOWCASE' }, window.location.origin);
+      });
       if (data.success) {
-        showToast(data.message, 'success');
-        fetchProducts();
+        showToast(data.message || 'Showcase synced', 'success');
+        await Promise.all([fetchProducts(), fetchSettings()]);
       } else {
-        showToast(data.error || 'ซิงก์สินค้าไม่สำเร็จ', 'error');
+        showToast(data.error || 'Showcase sync failed', 'error');
       }
     } catch {
       showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
@@ -440,12 +462,6 @@ export default function Home() {
         {/* Sidebar Footer System Status */}
         <div className="p-3.5 border-t border-slate-800 bg-slate-950/50">
           <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1.5">
-            <div className="flex items-center justify-between text-slate-400">
-              <span>โหมด API:</span>
-              <span className="font-semibold text-purple-300 uppercase">
-                {settings?.tiktok_api_mode || 'Studio'}
-              </span>
-            </div>
             <div className="flex items-center justify-between text-slate-400">
               <span>โฟลเดอร์เก็บไฟล์:</span>
               <span className="text-emerald-400 font-mono text-[10px]">storage/</span>
@@ -1068,100 +1084,14 @@ export default function Home() {
               <div>
                 <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
                   <SettingsIcon className="w-5 h-5 text-purple-400" />
-                  <span>ตั้งค่าระบบ & TikTok Showcase API</span>
+                  <span>ตั้งค่าการตั้งชื่อไฟล์</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  ปรับแต่ง Cookie Session ของ TikTok Studio, Partner Token และกฎการตั้งชื่อไฟล์ Output
+                  กำหนดรูปแบบการตั้งชื่อไฟล์ Output
                 </p>
               </div>
 
-              {/* Mode Selection */}
-              <div className="space-y-3">
-                <label className="block text-xs font-semibold text-slate-200">
-                  โหมดดึงสินค้า Showcase
-                </label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                  <div
-                    onClick={() =>
-                      setSettings({
-                        ...settings,
-                        tiktok_api_mode: 'studio',
-                        tiktok_api_url:
-                          settings.tiktok_api_url ||
-                          'https://shop.tiktok.com/api/v1/streamer_desktop/showcase_product/list',
-                      })
-                    }
-                    className={`p-3 rounded-xl border cursor-pointer text-xs transition-all ${
-                      settings.tiktok_api_mode === 'studio'
-                        ? 'bg-purple-950/40 border-purple-500 font-semibold text-purple-200'
-                        : 'bg-slate-800/60 border-slate-700 text-slate-400'
-                    }`}
-                  >
-                    🟣 TikTok Studio (ใช้ Cookie)
-                  </div>
-                  <div
-                    onClick={() =>
-                      setSettings({
-                        ...settings,
-                        tiktok_api_mode: 'official',
-                        tiktok_api_url:
-                          settings.tiktok_api_url ||
-                          'https://open-api.tiktokglobalshop.com/affiliate/202309/showcase/products/search',
-                      })
-                    }
-                    className={`p-3 rounded-xl border cursor-pointer text-xs transition-all ${
-                      settings.tiktok_api_mode === 'official'
-                        ? 'bg-indigo-950/40 border-indigo-500 font-semibold text-indigo-200'
-                        : 'bg-slate-800/60 border-slate-700 text-slate-400'
-                    }`}
-                  >
-                    🔵 Partner API (Token)
-                  </div>
-                  <div
-                    onClick={() => setSettings({ ...settings, tiktok_api_mode: 'mock' })}
-                    className={`p-3 rounded-xl border cursor-pointer text-xs transition-all ${
-                      settings.tiktok_api_mode === 'mock'
-                        ? 'bg-rose-950/40 border-rose-500 font-semibold text-rose-200'
-                        : 'bg-slate-800/60 border-slate-700 text-slate-400'
-                    }`}
-                  >
-                    ⚪ Mock Data (ทดสอบ)
-                  </div>
-                </div>
-
-                {settings.tiktok_api_mode === 'studio' && (
-                  <div className="space-y-3 pt-2">
-                    <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">
-                        Endpoint URL (TikTok Studio Internal)
-                      </label>
-                      <input
-                        type="text"
-                        value={
-                          settings.tiktok_api_url ||
-                          'https://shop.tiktok.com/api/v1/streamer_desktop/showcase_product/list'
-                        }
-                        onChange={(e) => setSettings({ ...settings, tiktok_api_url: e.target.value })}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">
-                        Cookie Session ของ TikTok Studio
-                      </label>
-                      <textarea
-                        rows={3}
-                        placeholder="วาง Cookie header จากเบราว์เซอร์ เช่น sessionid=...; ttwid=..."
-                        value={settings.tiktok_cookie || ''}
-                        onChange={(e) => setSettings({ ...settings, tiktok_cookie: e.target.value })}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-100"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Naming Rules */}
+            {/* Naming Rules */}
               <div className="space-y-3 pt-3 border-t border-slate-800">
                 <label className="block text-xs font-semibold text-slate-200">
                   การตั้งชื่อไฟล์ Output จาก FFmpeg
@@ -1479,10 +1409,10 @@ export default function Home() {
               <div>
                 <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
                   <SettingsIcon className="w-5 h-5 text-purple-400" />
-                  <span>ตั้งค่าระบบ & TikTok Showcase API</span>
+                  <span>ตั้งค่าการตั้งชื่อไฟล์</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  กำหนดรูปแบบการตั้งชื่อไฟล์ Output และ Cookie สำหรับดึงสินค้า Showcase
+                  กำหนดรูปแบบการตั้งชื่อไฟล์ Output
                 </p>
               </div>
               <button
@@ -1491,92 +1421,6 @@ export default function Home() {
               >
                 <X className="w-5 h-5" />
               </button>
-            </div>
-
-            {/* API Mode */}
-            <div className="space-y-3">
-              <label className="block text-xs font-semibold text-slate-200">
-                โหมดดึงสินค้า Showcase
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                <div
-                  onClick={() =>
-                    setSettings({
-                      ...settings,
-                      tiktok_api_mode: 'studio',
-                      tiktok_api_url:
-                        settings.tiktok_api_url ||
-                        'https://shop.tiktok.com/api/v1/streamer_desktop/showcase_product/list',
-                    })
-                  }
-                  className={`p-3 rounded-xl border cursor-pointer text-xs transition-all ${
-                    settings.tiktok_api_mode === 'studio'
-                      ? 'bg-purple-950/40 border-purple-500 font-semibold text-purple-200'
-                      : 'bg-slate-800/60 border-slate-700 text-slate-400'
-                  }`}
-                >
-                  🟣 TikTok Studio (ใช้ Cookie)
-                </div>
-                <div
-                  onClick={() =>
-                    setSettings({
-                      ...settings,
-                      tiktok_api_mode: 'official',
-                      tiktok_api_url:
-                        settings.tiktok_api_url ||
-                        'https://open-api.tiktokglobalshop.com/affiliate/202309/showcase/products/search',
-                    })
-                  }
-                  className={`p-3 rounded-xl border cursor-pointer text-xs transition-all ${
-                    settings.tiktok_api_mode === 'official'
-                      ? 'bg-indigo-950/40 border-indigo-500 font-semibold text-indigo-200'
-                      : 'bg-slate-800/60 border-slate-700 text-slate-400'
-                  }`}
-                >
-                  🔵 Partner Open API (Token)
-                </div>
-                <div
-                  onClick={() => setSettings({ ...settings, tiktok_api_mode: 'mock' })}
-                  className={`p-3 rounded-xl border cursor-pointer text-xs transition-all ${
-                    settings.tiktok_api_mode === 'mock'
-                      ? 'bg-rose-950/40 border-rose-500 font-semibold text-rose-200'
-                      : 'bg-slate-800/60 border-slate-700 text-slate-400'
-                  }`}
-                >
-                  ⚪ Mock Data (ทดสอบ)
-                </div>
-              </div>
-
-              {settings.tiktok_api_mode === 'studio' && (
-                <div className="space-y-3 pt-2">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Endpoint URL
-                    </label>
-                    <input
-                      type="text"
-                      value={
-                        settings.tiktok_api_url ||
-                        'https://shop.tiktok.com/api/v1/streamer_desktop/showcase_product/list'
-                      }
-                      onChange={(e) => setSettings({ ...settings, tiktok_api_url: e.target.value })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">
-                      Cookie Session ของ TikTok Studio
-                    </label>
-                    <textarea
-                      rows={3}
-                      placeholder="วาง Cookie header จาก Network tab เช่น sessionid=...; ttwid=..."
-                      value={settings.tiktok_cookie || ''}
-                      onChange={(e) => setSettings({ ...settings, tiktok_cookie: e.target.value })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs font-mono text-slate-100"
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Naming Rules */}

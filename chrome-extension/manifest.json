@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "VideoAuto Showcase Bridge",
+  "version": "1.0.0",
+  "description": "Syncs products from your signed-in TikTok Showcase to the local VideoAuto app.",
+  "permissions": ["tabs"],
+  "host_permissions": [
+    "https://shop.tiktok.com/*",
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    { "matches": ["http://localhost:3000/*", "http://127.0.0.1:3000/*"], "js": ["local-bridge.js"] },
+    { "matches": ["https://shop.tiktok.com/*"], "js": ["showcase-reader.js"] }
+  ]
+}

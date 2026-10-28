@@ -12,10 +12,6 @@ export async function GET() {
       include_product_id: number;
       sequence_number: number;
       storage_root: string;
-      tiktok_api_mode: string;
-      tiktok_api_url: string;
-      tiktok_access_token: string;
-      tiktok_cookie: string;
     };
 
     const preview = previewOutputFilename({
@@ -29,9 +25,12 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       settings: {
-        ...settings,
+        prefix: settings.prefix,
+        separator: settings.separator,
+        date_format: settings.date_format,
         include_product_id: Boolean(settings.include_product_id),
-        tiktok_cookie: settings.tiktok_cookie || '',
+        sequence_number: settings.sequence_number,
+        storage_root: settings.storage_root,
       },
       preview,
     });
@@ -53,10 +52,6 @@ export async function POST(req: NextRequest) {
       include_product_id,
       sequence_number,
       storage_root,
-      tiktok_api_mode,
-      tiktok_api_url,
-      tiktok_access_token,
-      tiktok_cookie,
     } = body;
 
     const db = getDb();
@@ -68,10 +63,6 @@ export async function POST(req: NextRequest) {
         include_product_id = COALESCE(?, include_product_id),
         sequence_number = COALESCE(?, sequence_number),
         storage_root = COALESCE(?, storage_root),
-        tiktok_api_mode = COALESCE(?, tiktok_api_mode),
-        tiktok_api_url = COALESCE(?, tiktok_api_url),
-        tiktok_access_token = COALESCE(?, tiktok_access_token),
-        tiktok_cookie = COALESCE(?, tiktok_cookie),
         updated_at = datetime('now')
       WHERE id = 'default'
     `).run(
@@ -80,11 +71,7 @@ export async function POST(req: NextRequest) {
       date_format ?? null,
       include_product_id !== undefined ? (include_product_id ? 1 : 0) : null,
       sequence_number ?? null,
-      storage_root ?? null,
-      tiktok_api_mode ?? null,
-      tiktok_api_url ?? null,
-      tiktok_access_token ?? null,
-      tiktok_cookie ?? null
+      storage_root ?? null
     );
 
     const preview = previewOutputFilename({

@@ -63,6 +63,7 @@ function initTables(db: ExtendedDatabase) {
       image_url TEXT,
       price REAL,
       raw_api_data TEXT,
+      sync_source TEXT DEFAULT 'mock',
       folder_path TEXT,
       is_available INTEGER DEFAULT 1,
       last_synced_at TEXT,
@@ -70,6 +71,12 @@ function initTables(db: ExtendedDatabase) {
       updated_at TEXT NOT NULL
     );
   `);
+
+  try {
+    db.exec("ALTER TABLE showcase_products ADD COLUMN sync_source TEXT DEFAULT 'mock';");
+  } catch {
+    // column already exists
+  }
 
   // Videos (One product to many videos)
   db.exec(`
@@ -142,7 +149,7 @@ function initTables(db: ExtendedDatabase) {
       include_product_id INTEGER DEFAULT 0,
       sequence_number INTEGER DEFAULT 1,
       storage_root TEXT DEFAULT './storage/TikTok-Affiliate',
-      tiktok_api_mode TEXT DEFAULT 'mock',
+      tiktok_api_mode TEXT DEFAULT 'studio',
       tiktok_api_url TEXT DEFAULT '',
       tiktok_access_token TEXT DEFAULT '',
       tiktok_cookie TEXT DEFAULT '',
