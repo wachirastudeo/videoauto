@@ -87,6 +87,7 @@ export default function Home() {
   const [videos, setVideos] = useState<VideoRecord[]>([]);
   const [history, setHistory] = useState<PublishingHistoryItem[]>([]);
   const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [resolvedStorageRoot, setResolvedStorageRoot] = useState('');
   const [namingPreview, setNamingPreview] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -151,6 +152,7 @@ export default function Home() {
       const data = await res.json();
       if (data.success) {
         setSettings(data.settings);
+        setResolvedStorageRoot(data.resolved_storage_root || data.settings.storage_root);
         setNamingPreview(data.preview);
       }
     } catch {
@@ -268,6 +270,7 @@ export default function Home() {
         showToast('บันทึกการตั้งค่าเรียบร้อย', 'success');
         setNamingPreview(data.preview);
         setIsSettingsModalOpen(false);
+        await Promise.all([fetchProducts(), fetchVideos(), fetchSettings()]);
       } else {
         showToast(data.error || 'บันทึกการตั้งค่าไม่สำเร็จ', 'error');
       }
@@ -464,7 +467,7 @@ export default function Home() {
           <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1.5">
             <div className="flex items-center justify-between text-slate-400">
               <span>โฟลเดอร์เก็บไฟล์:</span>
-              <span className="text-emerald-400 font-mono text-[10px]">storage/</span>
+              <span className="text-emerald-400 font-mono text-[10px] truncate max-w-32" title={settings?.storage_root}>{settings?.storage_root || "./storage/TikTok-Affiliate"}</span>
             </div>
             <div className="flex items-center gap-1.5 pt-1 text-[10px] text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -1084,11 +1087,17 @@ export default function Home() {
               <div>
                 <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
                   <SettingsIcon className="w-5 h-5 text-purple-400" />
-                  <span>ตั้งค่าการตั้งชื่อไฟล์</span>
+                  <span>ตั้งค่าระบบและโฟลเดอร์</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  กำหนดรูปแบบการตั้งชื่อไฟล์ Output
+                  กำหนดโฟลเดอร์สินค้าและรูปแบบชื่อไฟล์ Output
                 </p>
+              </div>
+
+              <div className="space-y-2 border-t border-slate-800 pt-4">
+                <label htmlFor="storage-root-settings" className="block text-xs font-semibold text-slate-200">Product storage folder</label>
+                <input id="storage-root-settings" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
+                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose a new path on the same drive.</p>
               </div>
 
             {/* Naming Rules */}
@@ -1409,10 +1418,10 @@ export default function Home() {
               <div>
                 <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
                   <SettingsIcon className="w-5 h-5 text-purple-400" />
-                  <span>ตั้งค่าการตั้งชื่อไฟล์</span>
+                  <span>ตั้งค่าระบบและโฟลเดอร์</span>
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  กำหนดรูปแบบการตั้งชื่อไฟล์ Output
+                  กำหนดโฟลเดอร์สินค้าและรูปแบบชื่อไฟล์ Output
                 </p>
               </div>
               <button
@@ -1422,6 +1431,12 @@ export default function Home() {
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+              <div className="space-y-2 border-t border-slate-800 pt-4">
+                <label htmlFor="storage-root-modal" className="block text-xs font-semibold text-slate-200">Product storage folder</label>
+                <input id="storage-root-modal" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
+                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose a new path on the same drive.</p>
+              </div>
 
             {/* Naming Rules */}
             <div className="space-y-3 pt-3 border-t border-slate-800">

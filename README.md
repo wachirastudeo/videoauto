@@ -65,6 +65,8 @@ npm run start
 2. Open `http://localhost:3000` in that same Chrome profile and select **Sync Showcase**. The bridge reads all Showcase pages and imports real product IDs. If TikTok needs login, it opens the Showcase page; sign in there and select **Sync Showcase** again.
 3. If the Showcase tab was already open when you installed the extension, reload it once.
 
+Product folders are created under `storage/TikTok-Affiliate/products/` by default. In **Settings → Product storage folder**, enter a new path to move existing product folders and update their video paths. Choose a new path on the same drive.
+
 The bridge uses TikTok Studio's page API, which may change. Sync reports errors instead of substituting mock products. The local app must be trusted because it receives your product list.
 
 ---
