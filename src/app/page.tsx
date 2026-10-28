@@ -19,6 +19,7 @@ import {
   Check,
   FolderCheck,
   FolderOpen,
+  ExternalLink,
   Trash2,
   ChevronDown,
   ChevronUp,
@@ -350,29 +351,29 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-row">
+    <div className="app-shell min-h-screen text-zinc-100 flex flex-col lg:flex-row">
       {/* ======================================================== */}
       {/* 1. LEFT-HAND MANAGEMENT SIDEBAR (แทบเครื่องมือจัดการซ้ายมือ) */}
       {/* ======================================================== */}
-      <aside className="w-64 md:w-72 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 min-h-screen sticky top-0 h-screen z-30 shadow-2xl">
+      <aside className="app-sidebar w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-zinc-800 flex flex-col shrink-0 lg:min-h-screen lg:sticky lg:top-0 lg:h-screen z-30">
         {/* Brand & Logo Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center gap-3 bg-slate-900/80">
-          <div className="p-2.5 bg-gradient-to-tr from-rose-500 via-purple-600 to-indigo-600 rounded-2xl shadow-lg shadow-purple-950/60 shrink-0">
+        <div className="p-5 border-b border-zinc-800 flex items-center gap-3">
+          <div className="p-2.5 bg-teal-500 rounded-xl shadow-lg shadow-teal-950/40 shrink-0">
             <ShoppingBag className="w-6 h-6 text-white" />
           </div>
           <div className="min-w-0">
-            <h1 className="font-extrabold text-sm tracking-wide bg-gradient-to-r from-white via-slate-200 to-purple-300 bg-clip-text text-transparent truncate">
-              TikTok Affiliate
+            <h1 className="font-extrabold text-base tracking-tight text-zinc-50 truncate">
+              VideoAuto
             </h1>
-            <p className="text-[11px] text-purple-400 font-semibold tracking-wider uppercase">
-              Video Manager
+            <p className="text-[10px] text-teal-300 font-semibold tracking-[0.18em] uppercase">
+              Showcase Studio
             </p>
           </div>
         </div>
 
         {/* Main Navigation Menu */}
-        <div className="p-3.5 space-y-1.5 flex-1 overflow-y-auto">
-          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+        <div className="app-sidebar-nav p-3.5 space-y-1.5 flex-1 overflow-y-auto">
+          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
             เมนูจัดการระบบ
           </div>
 
@@ -381,17 +382,17 @@ export default function Home() {
             onClick={() => setActiveTab('dashboard')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === 'dashboard'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/50'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
+                ? 'app-nav-active text-white'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70'
             }`}
           >
-            <LayoutDashboard className="w-4 h-4 text-purple-300 shrink-0" />
+            <LayoutDashboard className="w-4 h-4 text-teal-300 shrink-0" />
             <span className="truncate">Dashboard (สินค้า 3 คอลัมน์)</span>
             <span
               className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${
                 activeTab === 'dashboard'
                   ? 'bg-white/20 text-white'
-                  : 'bg-slate-800 text-purple-400'
+                  : 'bg-zinc-800 text-teal-400'
               }`}
             >
               {products.length}
@@ -403,8 +404,8 @@ export default function Home() {
             onClick={() => setActiveTab('videos')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === 'videos'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/50'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
+                ? 'app-nav-active text-white'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70'
             }`}
           >
             <Film className="w-4 h-4 text-rose-400 shrink-0" />
@@ -413,7 +414,7 @@ export default function Home() {
               className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${
                 activeTab === 'videos'
                   ? 'bg-white/20 text-white'
-                  : 'bg-slate-800 text-rose-400'
+                  : 'bg-zinc-800 text-rose-400'
               }`}
             >
               {videos.length}
@@ -425,8 +426,8 @@ export default function Home() {
             onClick={() => setActiveTab('queue')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === 'queue'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/50'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
+                ? 'app-nav-active text-white'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70'
             }`}
           >
             <UploadCloud className="w-4 h-4 text-amber-400 shrink-0" />
@@ -443,8 +444,8 @@ export default function Home() {
             onClick={() => setActiveTab('history')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === 'history'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/50'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
+                ? 'app-nav-active text-white'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70'
             }`}
           >
             <Clock className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -453,7 +454,7 @@ export default function Home() {
               className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${
                 activeTab === 'history'
                   ? 'bg-white/20 text-white'
-                  : 'bg-slate-800 text-emerald-400'
+                  : 'bg-zinc-800 text-emerald-400'
               }`}
             >
               {history.length}
@@ -465,8 +466,8 @@ export default function Home() {
             onClick={() => setActiveTab('settings')}
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === 'settings'
-                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/50'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
+                ? 'app-nav-active text-white'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70'
             }`}
           >
             <SettingsIcon className="w-4 h-4 text-cyan-400 shrink-0" />
@@ -475,7 +476,7 @@ export default function Home() {
 
           {/* Divider */}
           <div className="pt-4 pb-2">
-            <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+            <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
               ปุ่มคำสั่งด่วน (Quick Actions)
             </div>
           </div>
@@ -484,9 +485,9 @@ export default function Home() {
           <button
             onClick={handleSyncShowcase}
             disabled={loading}
-            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 bg-purple-950/40 hover:bg-purple-900/60 text-purple-200 border border-purple-500/30 rounded-xl text-xs font-semibold transition-all shadow-sm"
+            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 bg-teal-950/40 hover:bg-teal-900/60 text-teal-200 border border-teal-500/30 rounded-xl text-xs font-semibold transition-all shadow-sm"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-purple-400 shrink-0 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-teal-400 shrink-0 ${loading ? 'animate-spin' : ''}`} />
             <span className="truncate">ซิงก์สินค้า TikTok Showcase</span>
           </button>
 
@@ -494,7 +495,7 @@ export default function Home() {
           <button
             onClick={handleScanFolders}
             disabled={loading}
-            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 rounded-xl text-xs font-semibold transition-all"
+            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 rounded-xl text-xs font-semibold transition-all"
           >
             <FolderSync className={`w-3.5 h-3.5 text-emerald-400 shrink-0 ${loading ? 'animate-spin' : ''}`} />
             <span className="truncate">สแกนโฟลเดอร์เครื่อง</span>
@@ -514,9 +515,9 @@ export default function Home() {
         </div>
 
         {/* Sidebar Footer System Status */}
-        <div className="p-3.5 border-t border-slate-800 bg-slate-950/50">
-          <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 text-[11px] space-y-1.5">
-            <div className="flex items-center justify-between text-slate-400">
+        <div className="p-3.5 border-t border-zinc-800 bg-zinc-950/50">
+          <div className="bg-zinc-900/80 p-3 rounded-xl border border-zinc-800 text-[11px] space-y-1.5">
+            <div className="flex items-center justify-between text-zinc-400">
               <span>โฟลเดอร์เก็บไฟล์:</span>
               <span className="text-emerald-400 font-mono text-[10px] truncate max-w-32" title={settings?.storage_root}>{settings?.storage_root || "./storage/TikTok-Affiliate"}</span>
             </div>
@@ -531,11 +532,11 @@ export default function Home() {
       {/* ======================================================== */}
       {/* 2. MAIN CONTENT AREA (เนื้อหาด้านขวา) */}
       {/* ======================================================== */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+      <div className="flex-1 flex flex-col min-w-0 lg:h-screen lg:overflow-y-auto">
         {/* Top Header Bar */}
-        <header className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-lg">
+        <header className="app-header sticky top-0 z-20 backdrop-blur-md border-b border-zinc-800 px-5 md:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <h2 className="font-bold text-base text-slate-100 truncate">
+            <h2 className="font-bold text-base text-zinc-100 truncate">
               {activeTab === 'dashboard' && 'Dashboard แสดงสินค้า 3 คอลัมน์ & วิดีโอในตัว'}
               {activeTab === 'videos' && 'รายการวิดีโอทั้งหมดในระบบ'}
               {activeTab === 'queue' && 'คิวรอส่งคลิปขึ้น TikTok'}
@@ -551,13 +552,13 @@ export default function Home() {
               placeholder="ค้นหาชื่อสินค้า หรือ Product ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 w-52 sm:w-64"
+              className="bg-zinc-800/90 border border-zinc-700 rounded-xl px-3.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-teal-500 w-52 sm:w-64"
             />
 
             <button
               onClick={handleSyncShowcase}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-purple-950/40 transition-all shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-teal-950/40 transition-all shrink-0"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">ซิงก์ Showcase</span>
@@ -566,7 +567,7 @@ export default function Home() {
             <button
               onClick={handleScanFolders}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition-all shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-xl text-xs font-semibold transition-all shrink-0"
             >
               <FolderSync className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">สแกนเครื่อง</span>
@@ -574,7 +575,7 @@ export default function Home() {
 
             <button
               onClick={() => setIsSettingsModalOpen(true)}
-              className="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300 hover:text-white transition-all shrink-0"
+              className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-zinc-300 hover:text-white transition-all shrink-0"
               title="ตั้งค่าระบบ"
             >
               <SettingsIcon className="w-4 h-4" />
@@ -583,62 +584,58 @@ export default function Home() {
         </header>
 
         {/* Tab View Container */}
-        <main className="p-6 max-w-[1600px] w-full mx-auto space-y-6">
+        <main className="p-5 md:p-8 max-w-[1680px] w-full mx-auto space-y-7">
           {/* ======================================================== */}
           {/* TAB 1: DASHBOARD (SHOWCASE 3 COLUMNS & INLINE VIDEOS) */}
           {/* ======================================================== */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
               {hiddenProducts.length > 0 && (
-                <details className="bg-slate-900/70 rounded-2xl border border-slate-800 p-4 text-xs text-slate-300">
+                <details className="bg-zinc-900/70 rounded-2xl border border-zinc-800 p-4 text-xs text-zinc-300">
                   <summary className="cursor-pointer font-semibold">Removed from VideoAuto ({hiddenProducts.length})</summary>
                   <div className="mt-3 space-y-2">
                     {hiddenProducts.map((product) => (
-                      <div key={product.id} className="flex items-center justify-between gap-3 border-t border-slate-800 pt-2">
+                      <div key={product.id} className="flex items-center justify-between gap-3 border-t border-zinc-800 pt-2">
                         <span className="truncate">{product.name}</span>
-                        <button type="button" onClick={() => handleRestoreProduct(product)} className="shrink-0 text-purple-300 hover:text-white underline">Restore</button>
+                        <button type="button" onClick={() => handleRestoreProduct(product)} className="shrink-0 text-teal-300 hover:text-white underline">Restore</button>
                       </div>
                     ))}
                   </div>
                 </details>
               )}
-              {/* Summary Banner */}
-              <div className="bg-slate-900/70 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
-                <div className="flex items-center gap-3">
-                  <span className="font-semibold text-slate-200">
-                    สินค้าทั้งหมด: <b className="text-purple-300 text-sm">{products.length}</b> รายการ
-                  </span>
-                  <span className="text-slate-600">•</span>
-                  <span className="font-semibold text-slate-200">
-                    คลิปวิดีโอทั้งหมด: <b className="text-emerald-400 text-sm">{videos.length}</b> คลิป
-                  </span>
-                  <span className="text-slate-600">•</span>
-                  <span className="font-semibold text-slate-200">
-                    คิวรอส่ง: <b className="text-amber-400 text-sm">{queuedVideos.length}</b> คลิป
-                  </span>
+              {/* Overview */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                <div className="metric-card rounded-2xl p-4 border border-zinc-800">
+                  <span className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400">Showcase products</span>
+                  <div className="mt-2 flex items-baseline gap-2"><strong className="text-3xl font-bold tracking-tight text-teal-300">{products.length}</strong><span className="text-xs text-zinc-500">active</span></div>
                 </div>
-                <div className="text-slate-400 text-[11px]">
-                  * จัดแสดงสินค้า 3 คอลัมน์ พร้อมภาพนิ่งปก โฟลเดอร์ในเครื่อง และจัดการคลิปได้ในตัวการ์ดทันที
+                <div className="metric-card rounded-2xl p-4 border border-zinc-800">
+                  <span className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400">Video library</span>
+                  <div className="mt-2 flex items-baseline gap-2"><strong className="text-3xl font-bold tracking-tight text-zinc-100">{videos.length}</strong><span className="text-xs text-zinc-500">clips</span></div>
+                </div>
+                <div className="metric-card rounded-2xl p-4 border border-zinc-800">
+                  <span className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400">Ready to publish</span>
+                  <div className="mt-2 flex items-baseline gap-2"><strong className="text-3xl font-bold tracking-tight text-amber-300">{queuedVideos.length}</strong><span className="text-xs text-zinc-500">queued</span></div>
                 </div>
               </div>
 
               {/* 3 Columns Showcase Grid */}
               {filteredProducts.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/40 rounded-3xl border border-dashed border-slate-800 p-8">
-                  <ShoppingBag className="w-14 h-14 text-slate-600 mx-auto mb-3" />
-                  <h3 className="text-base font-bold text-slate-200">ยังไม่มีสินค้าในระบบ</h3>
-                  <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 mb-5">
+                <div className="text-center py-20 bg-zinc-900/40 rounded-3xl border border-dashed border-zinc-800 p-8">
+                  <ShoppingBag className="w-14 h-14 text-zinc-600 mx-auto mb-3" />
+                  <h3 className="text-base font-bold text-zinc-200">ยังไม่มีสินค้าในระบบ</h3>
+                  <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1 mb-5">
                     กดปุ่ม &ldquo;ซิงก์สินค้า TikTok Showcase&rdquo; เพื่อโหลดสินค้าหน้าร้านและสร้างโฟลเดอร์ในเครื่องอัตโนมัติ
                   </p>
                   <button
                     onClick={handleSyncShowcase}
-                    className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-purple-950/50"
+                    className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-teal-950/50"
                   >
                     ซิงก์ดึงสินค้าทันที
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
                   {filteredProducts.map((prod) => {
                     const productVideos = videos.filter((v) => v.product_id === prod.id);
                     const isExpanded = expandedProductIds.includes(prod.id);
@@ -659,13 +656,13 @@ export default function Home() {
                     }
 
                     return (
-                      <div
+                      <article
                         key={prod.id}
-                        className="bg-slate-900/90 border border-slate-800 rounded-3xl overflow-hidden shadow-xl hover:border-purple-500/40 transition-all duration-200 flex flex-col justify-between"
+                        className="product-card bg-zinc-900/90 border border-zinc-800 rounded-[1.35rem] overflow-hidden hover:border-teal-500/40 transition-all duration-200 flex flex-col justify-between"
                       >
                         <div>
                           {/* 1. Static Product Cover Image (ภาพนิ่งเป็นปก) */}
-                          <div className="h-52 bg-slate-950 relative overflow-hidden group">
+                          <div className="h-48 bg-zinc-950 relative overflow-hidden group">
                             {prod.image_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
@@ -674,14 +671,14 @@ export default function Home() {
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-slate-700">
+                              <div className="w-full h-full flex items-center justify-center text-zinc-700">
                                 <ShoppingBag className="w-16 h-16" />
                               </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-black/20" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-black/20" />
 
                             {/* Price Badge */}
-                            <div className="absolute top-3 right-3 bg-slate-900/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-emerald-400 border border-emerald-500/30 shadow-lg">
+                            <div className="absolute top-3 right-3 bg-zinc-900/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-emerald-400 border border-emerald-500/30 shadow-lg">
                               ฿{prod.price.toLocaleString()}
                             </div>
 
@@ -692,22 +689,22 @@ export default function Home() {
                             </div>
 
                             {/* Video Count Overlay Pill */}
-                            <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-medium text-slate-200 border border-white/10">
-                              <Film className="w-3.5 h-3.5 text-purple-400" />
+                            <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-medium text-zinc-200 border border-white/10">
+                              <Film className="w-3.5 h-3.5 text-teal-400" />
                               <span>{productVideos.length} วิดีโอในสินค้านี้</span>
                             </div>
                           </div>
 
                           {/* 2. Product Details */}
                           <div className="p-5 space-y-3">
-                            <h3 className="font-bold text-sm text-slate-100 line-clamp-2 leading-snug">
+                            <h3 className="font-bold text-sm text-zinc-100 line-clamp-2 leading-snug">
                               {prod.name}
                             </h3>
 
                             {/* Product ID Pill */}
-                            <div className="flex items-center justify-between bg-purple-950/40 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs">
-                              <span className="text-slate-400 text-[11px]">Product ID:</span>
-                              <span className="font-mono text-purple-300 font-semibold tracking-wide">
+                            <div className="flex items-center justify-between bg-teal-950/40 border border-teal-500/20 rounded-xl px-3 py-1.5 text-xs">
+                              <span className="text-zinc-400 text-[11px]">Product ID:</span>
+                              <span className="font-mono text-teal-300 font-semibold tracking-wide">
                                 {prod.platform_product_id}
                               </span>
                             </div>
@@ -715,12 +712,12 @@ export default function Home() {
                             {/* Metadata: Shop, Stock, Commission */}
                             <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
                               {shopName && (
-                                <span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md border border-slate-700">
+                                <span className="px-2 py-0.5 bg-zinc-800 text-zinc-300 rounded-md border border-zinc-700">
                                   🏪 {shopName}
                                 </span>
                               )}
                               {stock > 0 && (
-                                <span className="px-2 py-0.5 bg-slate-800/80 text-amber-300 rounded-md border border-slate-700">
+                                <span className="px-2 py-0.5 bg-zinc-800/80 text-amber-300 rounded-md border border-zinc-700">
                                   📦 สต็อก {stock}
                                 </span>
                               )}
@@ -732,30 +729,31 @@ export default function Home() {
                             </div>
 
                             {/* Storage Folder Path */}
-                            <div className="text-[10px] text-slate-500 bg-slate-950/60 p-2 rounded-lg font-mono truncate border border-slate-800/70">
+                            <div className="text-[10px] text-zinc-400 bg-zinc-950/60 p-2.5 rounded-lg font-mono truncate border border-zinc-800/70" title={prod.folder_path}>
                               📁 {prod.folder_path}
                             </div>
                             <a
                               href="https://shop.tiktok.com/streamer/showcase/product/list"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-block text-[11px] text-purple-300 hover:text-purple-200 underline"
+                              className="showcase-link flex items-center justify-between gap-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3.5 py-2.5 text-xs font-semibold text-amber-100 hover:bg-amber-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 transition-colors"
                             >
-                              Remove from TikTok Showcase ↗
+                              <span className="flex items-center gap-2"><ExternalLink className="h-4 w-4" />Remove from TikTok Showcase</span>
+                              <span aria-hidden="true">↗</span>
                             </a>
-                            <p className="text-[10px] text-slate-500">After removing it on TikTok, click Sync Showcase to update this list. Videos and folders stay on disk.</p>
+                            <p className="text-[10px] leading-relaxed text-zinc-400">Opens TikTok Shop. Remove it there, then sync to update this list. Your videos and folders stay on disk.</p>
 
                             {/* 3. Embedded Videos Inside This Product */}
-                            <div className="pt-2 border-t border-slate-800/80 space-y-2.5">
+                            <div className="pt-2 border-t border-zinc-800/80 space-y-2.5">
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                                <span className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
                                   <Film className="w-3.5 h-3.5 text-rose-400" />
                                   <span>คลิปวิดีโอ ({productVideos.length})</span>
                                 </span>
                                 {productVideos.length > 0 && (
                                   <button
                                     onClick={() => toggleExpandProduct(prod.id)}
-                                    className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1"
+                                    className="text-[11px] text-zinc-400 hover:text-white flex items-center gap-1"
                                   >
                                     <span>{isExpanded ? 'ย่อคลิป' : 'ขยายคลิป'}</span>
                                     {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -764,14 +762,14 @@ export default function Home() {
                               </div>
 
                               {productVideos.length === 0 ? (
-                                <div className="bg-slate-950/50 border border-dashed border-slate-800 rounded-2xl p-4 text-center space-y-2">
-                                  <p className="text-xs text-slate-400">ยังไม่มีวิดีโอในโฟลเดอร์สินค้านี้</p>
+                                <div className="bg-zinc-950/50 border border-dashed border-zinc-800 rounded-2xl p-4 text-center space-y-2">
+                                  <p className="text-xs text-zinc-400">ยังไม่มีวิดีโอในโฟลเดอร์สินค้านี้</p>
                                   <button
                                     onClick={() => {
                                       setTargetProductIdForUpload(prod.id);
                                       setIsUploadModalOpen(true);
                                     }}
-                                    className="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 shadow-sm"
+                                    className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 shadow-sm"
                                   >
                                     <PlusCircle className="w-3.5 h-3.5" />
                                     <span>อัปโหลดวิดีโอใส่สินค้านี้</span>
@@ -787,7 +785,7 @@ export default function Home() {
                                     return (
                                       <div
                                         key={video.id}
-                                        className="bg-slate-950/80 border border-slate-800/90 rounded-2xl p-3 space-y-2.5 hover:border-slate-700 transition-colors"
+                                        className="bg-zinc-950/80 border border-zinc-800/90 rounded-2xl p-3 space-y-2.5 hover:border-zinc-700 transition-colors"
                                       >
                                         {/* Video row header: Thumb + Name */}
                                         <div className="flex items-center gap-2.5">
@@ -798,7 +796,7 @@ export default function Home() {
                                                 title: video.output_filename || video.source_filename,
                                               })
                                             }
-                                            className="w-12 h-14 bg-slate-800 rounded-lg overflow-hidden relative cursor-pointer group shrink-0 border border-slate-700 flex items-center justify-center"
+                                            className="w-12 h-14 bg-zinc-800 rounded-lg overflow-hidden relative cursor-pointer group shrink-0 border border-zinc-700 flex items-center justify-center"
                                           >
                                             {video.thumbnail_path ? (
                                               // eslint-disable-next-line @next/next/no-img-element
@@ -808,7 +806,7 @@ export default function Home() {
                                                 className="w-full h-full object-cover"
                                               />
                                             ) : (
-                                              <Film className="w-5 h-5 text-slate-600" />
+                                              <Film className="w-5 h-5 text-zinc-600" />
                                             )}
                                             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center">
                                               <Play className="w-4 h-4 text-white" />
@@ -816,7 +814,7 @@ export default function Home() {
                                           </div>
 
                                           <div className="flex-1 min-w-0">
-                                            <h4 className="text-xs font-semibold text-slate-200 truncate font-mono">
+                                            <h4 className="text-xs font-semibold text-zinc-200 truncate font-mono">
                                               {video.output_filename ? (
                                                 <span className="text-emerald-300">
                                                   ✓ {video.output_filename}
@@ -825,7 +823,7 @@ export default function Home() {
                                                 video.source_filename
                                               )}
                                             </h4>
-                                            <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-0.5">
+                                            <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 mt-0.5">
                                               {video.voice_path ? (
                                                 <span className="text-sky-300 flex items-center gap-0.5">
                                                   <Volume2 className="w-3 h-3" /> มีเสียงพากย์
@@ -839,8 +837,8 @@ export default function Home() {
 
                                         {/* Status Badges */}
                                         <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-                                          <div className="bg-slate-900 p-1.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                                            <span className="text-slate-500">ตัดต่อ:</span>
+                                          <div className="bg-zinc-900 p-1.5 rounded-lg border border-zinc-800 flex items-center justify-between">
+                                            <span className="text-zinc-500">ตัดต่อ:</span>
                                             {video.edit_status === 'approved' && (
                                               <span className="text-emerald-400 font-semibold">9:16 สำเร็จ</span>
                                             )}
@@ -848,15 +846,15 @@ export default function Home() {
                                               <span className="text-amber-400 font-semibold animate-pulse">กำลังตัดต่อ...</span>
                                             )}
                                             {video.edit_status === 'ready_to_edit' && (
-                                              <span className="text-slate-400">รอสั่งตัด</span>
+                                              <span className="text-zinc-400">รอสั่งตัด</span>
                                             )}
                                             {video.edit_status === 'failed' && (
                                               <span className="text-rose-400">ล้มเหลว</span>
                                             )}
                                           </div>
 
-                                          <div className="bg-slate-900 p-1.5 rounded-lg border border-slate-800 flex items-center justify-between">
-                                            <span className="text-slate-500">TikTok:</span>
+                                          <div className="bg-zinc-900 p-1.5 rounded-lg border border-zinc-800 flex items-center justify-between">
+                                            <span className="text-zinc-500">TikTok:</span>
                                             {video.upload_status === 'published' && (
                                               <span className="text-emerald-400 font-semibold">เผยแพร่แล้ว ✓</span>
                                             )}
@@ -864,10 +862,10 @@ export default function Home() {
                                               <span className="text-amber-300 font-semibold animate-pulse">กำลังส่ง...</span>
                                             )}
                                             {video.upload_status === 'needs_verification' && (
-                                              <span className="text-purple-300 font-semibold">รอตรวจสอบ</span>
+                                              <span className="text-teal-300 font-semibold">รอตรวจสอบ</span>
                                             )}
                                             {video.upload_status === 'idle' && (
-                                              <span className="text-slate-400">ยังไม่อัปโหลด</span>
+                                              <span className="text-zinc-400">ยังไม่อัปโหลด</span>
                                             )}
                                           </div>
                                         </div>
@@ -878,7 +876,7 @@ export default function Home() {
                                             <button
                                               onClick={() => handleProcessVideo(video.id)}
                                               disabled={loading}
-                                              className="flex-1 py-1.5 px-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-sm"
+                                              className="flex-1 py-1.5 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-sm"
                                             >
                                               <Film className="w-3 h-3" />
                                               <span>ตัดต่อ FFmpeg</span>
@@ -889,8 +887,8 @@ export default function Home() {
                                               download={video.output_filename || undefined}
                                               className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow-sm ${
                                                 video.upload_status === 'published'
-                                                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                                                  : 'bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white shadow-rose-950/50'
+                                                  ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                                                  : 'bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white shadow-rose-950/50'
                                               }`}
                                             >
                                               <Share2 className="w-3 h-3" />
@@ -904,7 +902,7 @@ export default function Home() {
 
                                           <button
                                             onClick={() => setEditingVideo(video)}
-                                            className="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700"
+                                            className="py-1.5 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs font-medium border border-zinc-700"
                                             title="แก้ไขแคปชั่น"
                                           >
                                             <Sliders className="w-3 h-3" />
@@ -920,8 +918,8 @@ export default function Home() {
                         </div>
 
                         {/* Card Footer: Add video into this product */}
-                        <div className="p-4 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between gap-2">
-                          <span className="text-[11px] text-slate-400">
+                        <div className="p-4 border-t border-zinc-800/80 bg-zinc-950/60 flex items-center justify-between gap-2">
+                          <span className="text-[11px] text-zinc-400">
                             โฟลเดอร์: <code>input/</code>
                           </span>
                           <button
@@ -938,13 +936,13 @@ export default function Home() {
                               setTargetProductIdForUpload(prod.id);
                               setIsUploadModalOpen(true);
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600/90 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold shadow-md transition-all"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-600/90 hover:bg-teal-500 text-white rounded-lg text-xs font-semibold shadow-md transition-all"
                           >
                             <PlusCircle className="w-3.5 h-3.5" />
                             <span>เพิ่มคลิปใหม่</span>
                           </button>
                         </div>
-                      </div>
+                      </article>
                     );
                   })}
                 </div>
@@ -957,26 +955,26 @@ export default function Home() {
           {/* ======================================================== */}
           {activeTab === 'videos' && (
             <div className="space-y-4">
-              <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+              <div className="bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-100">รายการคลิปวิดีโอทั้งหมด ({videos.length})</h3>
-                  <p className="text-xs text-slate-400">คลิปทั้งหมดจากโฟลเดอร์สินค้าและโฟลเดอร์ทั่วไป</p>
+                  <h3 className="text-sm font-bold text-zinc-100">รายการคลิปวิดีโอทั้งหมด ({videos.length})</h3>
+                  <p className="text-xs text-zinc-400">คลิปทั้งหมดจากโฟลเดอร์สินค้าและโฟลเดอร์ทั่วไป</p>
                 </div>
                 <button
                   onClick={() => {
                     setTargetProductIdForUpload('');
                     setIsUploadModalOpen(true);
                   }}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-semibold shadow-md flex items-center gap-1.5"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-semibold shadow-md flex items-center gap-1.5"
                 >
                   <PlusCircle className="w-4 h-4" />
                   <span>เพิ่มคลิปใหม่</span>
                 </button>
               </div>
 
-              <div className="bg-slate-900/80 rounded-2xl border border-slate-800 overflow-hidden">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-950/70 text-slate-400 border-b border-slate-800 font-semibold uppercase text-[10px]">
+              <div className="bg-zinc-900/80 rounded-2xl border border-zinc-800 overflow-hidden">
+                <table className="w-full text-left text-xs text-zinc-300">
+                  <thead className="bg-zinc-950/70 text-zinc-400 border-b border-zinc-800 font-semibold uppercase text-[10px]">
                     <tr>
                       <th className="p-3.5">วิดีโอ / ตัวอย่าง</th>
                       <th className="p-3.5">สินค้าที่เชื่อมโยง</th>
@@ -985,25 +983,25 @@ export default function Home() {
                       <th className="p-3.5 text-right">การจัดการ</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-zinc-800">
                     {videos.map((v) => (
-                      <tr key={v.id} className="hover:bg-slate-800/40 transition-colors">
+                      <tr key={v.id} className="hover:bg-zinc-800/40 transition-colors">
                         <td className="p-3.5">
-                          <div className="font-semibold text-slate-100 font-mono">
+                          <div className="font-semibold text-zinc-100 font-mono">
                             {v.output_filename || v.source_filename}
                           </div>
-                          <div className="text-[11px] text-slate-500">
+                          <div className="text-[11px] text-zinc-500">
                             {v.voice_path ? 'มีไฟล์เสียงพากย์' : 'ไม่มีเสียงพากย์'}
                           </div>
                         </td>
                         <td className="p-3.5">
                           {v.product_name ? (
                             <div>
-                              <div className="text-slate-200 font-medium truncate max-w-xs">{v.product_name}</div>
-                              <div className="text-[10px] text-purple-400 font-mono">{v.platform_product_id}</div>
+                              <div className="text-zinc-200 font-medium truncate max-w-xs">{v.product_name}</div>
+                              <div className="text-[10px] text-teal-400 font-mono">{v.platform_product_id}</div>
                             </div>
                           ) : (
-                            <span className="text-slate-500">ไม่ได้ผูกสินค้า</span>
+                            <span className="text-zinc-500">ไม่ได้ผูกสินค้า</span>
                           )}
                         </td>
                         <td className="p-3.5">
@@ -1013,7 +1011,7 @@ export default function Home() {
                             </span>
                           )}
                           {v.edit_status === 'ready_to_edit' && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] bg-zinc-800 text-zinc-400">
                               รอสั่งตัด
                             </span>
                           )}
@@ -1030,7 +1028,7 @@ export default function Home() {
                             </span>
                           )}
                           {v.upload_status === 'idle' && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] bg-zinc-800 text-zinc-400">
                               ยังไม่ได้ส่ง
                             </span>
                           )}
@@ -1043,7 +1041,7 @@ export default function Home() {
                         <td className="p-3.5 text-right space-x-2">
                           <button
                             onClick={() => handleProcessVideo(v.id)}
-                            className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs"
+                            className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs"
                           >
                             ตัดต่อ
                           </button>
@@ -1068,30 +1066,30 @@ export default function Home() {
           {/* ======================================================== */}
           {activeTab === 'queue' && (
             <div className="space-y-4">
-              <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+              <div className="bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-100">คิวรออัปโหลด TikTok ({queuedVideos.length})</h3>
-                  <p className="text-xs text-slate-400">ดาวน์โหลดคลิปแล้วโพสต์บน TikTok ด้วยตนเอง การเชื่อมต่อเผยแพร่อัตโนมัติยังไม่พร้อม</p>
+                  <h3 className="text-sm font-bold text-zinc-100">คิวรออัปโหลด TikTok ({queuedVideos.length})</h3>
+                  <p className="text-xs text-zinc-400">ดาวน์โหลดคลิปแล้วโพสต์บน TikTok ด้วยตนเอง การเชื่อมต่อเผยแพร่อัตโนมัติยังไม่พร้อม</p>
                 </div>
               </div>
 
               {queuedVideos.length === 0 ? (
-                <div className="text-center py-16 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800 p-8">
-                  <UploadCloud className="w-12 h-12 text-slate-600 mx-auto mb-2" />
-                  <p className="text-sm text-slate-400">ไม่มีคลิปที่ค้างในคิวรอส่ง</p>
+                <div className="text-center py-16 bg-zinc-900/40 rounded-2xl border border-dashed border-zinc-800 p-8">
+                  <UploadCloud className="w-12 h-12 text-zinc-600 mx-auto mb-2" />
+                  <p className="text-sm text-zinc-400">ไม่มีคลิปที่ค้างในคิวรอส่ง</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {queuedVideos.map((v) => (
                     <div
                       key={v.id}
-                      className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex items-center justify-between"
+                      className="bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 flex items-center justify-between"
                     >
                       <div>
-                        <h4 className="font-semibold text-slate-200 font-mono text-xs">
+                        <h4 className="font-semibold text-zinc-200 font-mono text-xs">
                           {v.output_filename || v.source_filename}
                         </h4>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
                           สินค้า: {v.product_name || 'ไม่ได้ผูก'} ({v.platform_product_id})
                         </p>
                       </div>
@@ -1114,20 +1112,20 @@ export default function Home() {
           {/* ======================================================== */}
           {activeTab === 'history' && (
             <div className="space-y-4">
-              <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
-                <h3 className="text-sm font-bold text-slate-100">ประวัติการเผยแพร่ & แนบ Anchor ({history.length})</h3>
-                <p className="text-xs text-slate-400">บันทึกผลการยิง TikTok API และสถานะแนบตะกร้าสินค้า</p>
+              <div className="bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800">
+                <h3 className="text-sm font-bold text-zinc-100">ประวัติการเผยแพร่ & แนบ Anchor ({history.length})</h3>
+                <p className="text-xs text-zinc-400">บันทึกผลการยิง TikTok API และสถานะแนบตะกร้าสินค้า</p>
               </div>
 
               {history.length === 0 ? (
-                <div className="text-center py-16 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800 p-8">
-                  <Clock className="w-12 h-12 text-slate-600 mx-auto mb-2" />
-                  <p className="text-sm text-slate-400">ยังไม่มีประวัติการเผยแพร่</p>
+                <div className="text-center py-16 bg-zinc-900/40 rounded-2xl border border-dashed border-zinc-800 p-8">
+                  <Clock className="w-12 h-12 text-zinc-600 mx-auto mb-2" />
+                  <p className="text-sm text-zinc-400">ยังไม่มีประวัติการเผยแพร่</p>
                 </div>
               ) : (
-                <div className="bg-slate-900/80 rounded-2xl border border-slate-800 overflow-hidden">
-                  <table className="w-full text-left text-xs text-slate-300">
-                    <thead className="bg-slate-950/70 text-slate-400 border-b border-slate-800 font-semibold uppercase text-[10px]">
+                <div className="bg-zinc-900/80 rounded-2xl border border-zinc-800 overflow-hidden">
+                  <table className="w-full text-left text-xs text-zinc-300">
+                    <thead className="bg-zinc-950/70 text-zinc-400 border-b border-zinc-800 font-semibold uppercase text-[10px]">
                       <tr>
                         <th className="p-3.5">เวลาที่เผยแพร่</th>
                         <th className="p-3.5">วิดีโอ</th>
@@ -1136,11 +1134,11 @@ export default function Home() {
                         <th className="p-3.5">TikTok Item ID</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800">
+                    <tbody className="divide-y divide-zinc-800">
                       {history.map((h) => (
-                        <tr key={h.id} className="hover:bg-slate-800/40">
-                          <td className="p-3.5 text-slate-400 font-mono text-[11px]">{h.created_at}</td>
-                          <td className="p-3.5 font-semibold text-slate-100">{h.output_filename || h.source_filename}</td>
+                        <tr key={h.id} className="hover:bg-zinc-800/40">
+                          <td className="p-3.5 text-zinc-400 font-mono text-[11px]">{h.created_at}</td>
+                          <td className="p-3.5 font-semibold text-zinc-100">{h.output_filename || h.source_filename}</td>
                           <td className="p-3.5">
                             {h.status === 'success' ? (
                               <span className="text-emerald-400 font-semibold">สำเร็จ ✓</span>
@@ -1149,9 +1147,9 @@ export default function Home() {
                             )}
                           </td>
                           <td className="p-3.5">
-                            <span className="text-purple-300 font-semibold">{h.anchor_status}</span>
+                            <span className="text-teal-300 font-semibold">{h.anchor_status}</span>
                           </td>
-                          <td className="p-3.5 font-mono text-slate-400">{h.tiktok_publish_id || '-'}</td>
+                          <td className="p-3.5 font-mono text-zinc-400">{h.tiktok_publish_id || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1165,56 +1163,56 @@ export default function Home() {
           {/* TAB 5: SETTINGS */}
           {/* ======================================================== */}
           {activeTab === 'settings' && settings && (
-            <div className="max-w-2xl bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-2xl">
+            <div className="max-w-2xl bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 space-y-6 shadow-2xl">
               <div>
-                <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                  <SettingsIcon className="w-5 h-5 text-purple-400" />
+                <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+                  <SettingsIcon className="w-5 h-5 text-teal-400" />
                   <span>ตั้งค่าระบบและโฟลเดอร์</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-zinc-400 mt-1">
                   กำหนดโฟลเดอร์สินค้าและรูปแบบชื่อไฟล์ Output
                 </p>
               </div>
 
-              <div className="space-y-2 border-t border-slate-800 pt-4">
-                <label htmlFor="storage-root-settings" className="block text-xs font-semibold text-slate-200">Product storage folder</label>
+              <div className="space-y-2 border-t border-zinc-800 pt-4">
+                <label htmlFor="storage-root-settings" className="block text-xs font-semibold text-zinc-200">Product storage folder</label>
                 <div className="flex gap-2">
-                  <input id="storage-root-settings" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="min-w-0 flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
-                  <button type="button" onClick={handleChooseStorageFolder} disabled={choosingFolder} className="flex items-center gap-1.5 rounded-xl border border-slate-600 px-3 py-2 text-xs text-slate-100 hover:bg-slate-800 disabled:opacity-50"><FolderOpen className="h-4 w-4" />{choosingFolder ? 'Choosing...' : 'Choose folder'}</button>
+                  <input id="storage-root-settings" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="min-w-0 flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-mono text-zinc-100" />
+                  <button type="button" onClick={handleChooseStorageFolder} disabled={choosingFolder} className="flex items-center gap-1.5 rounded-xl border border-zinc-600 px-3 py-2 text-xs text-zinc-100 hover:bg-zinc-800 disabled:opacity-50"><FolderOpen className="h-4 w-4" />{choosingFolder ? 'Choosing...' : 'Choose folder'}</button>
                 </div>
-                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose an empty folder on the same drive.</p>
+                <p className="text-xs text-zinc-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose an empty folder on the same drive.</p>
               </div>
 
             {/* Naming Rules */}
-              <div className="space-y-3 pt-3 border-t border-slate-800">
-                <label className="block text-xs font-semibold text-slate-200">
+              <div className="space-y-3 pt-3 border-t border-zinc-800">
+                <label className="block text-xs font-semibold text-zinc-200">
                   การตั้งชื่อไฟล์ Output จาก FFmpeg
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">Prefix</label>
+                    <label className="block text-[11px] text-zinc-400 mb-1">Prefix</label>
                     <input
                       type="text"
                       value={settings.prefix}
                       onChange={(e) =>
                         setSettings({ ...settings, prefix: e.target.value.toUpperCase() })
                       }
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-100"
+                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-1.5 text-xs text-zinc-100"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">ตัวคั่น</label>
+                    <label className="block text-[11px] text-zinc-400 mb-1">ตัวคั่น</label>
                     <select
                       value={settings.separator}
                       onChange={(e) => setSettings({ ...settings, separator: e.target.value })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-100"
+                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-2 py-1.5 text-xs text-zinc-100"
                     >
                       <option value="_">_ (ขีดล่าง)</option>
                       <option value="-">- (ขีดกลาง)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">วันที่</label>
+                    <label className="block text-[11px] text-zinc-400 mb-1">วันที่</label>
                     <select
                       value={settings.date_format}
                       onChange={(e) =>
@@ -1223,7 +1221,7 @@ export default function Home() {
                           date_format: e.target.value as AppSettings['date_format'],
                         })
                       }
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-100"
+                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-2 py-1.5 text-xs text-zinc-100"
                     >
                       <option value="YYYYMMDD">YYYYMMDD</option>
                       <option value="YYMMDD">YYMMDD</option>
@@ -1231,7 +1229,7 @@ export default function Home() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">ลำดับถัดไป</label>
+                    <label className="block text-[11px] text-zinc-400 mb-1">ลำดับถัดไป</label>
                     <input
                       type="number"
                       value={settings.sequence_number}
@@ -1241,13 +1239,13 @@ export default function Home() {
                           sequence_number: parseInt(e.target.value, 10) || 1,
                         })
                       }
-                      className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-100"
+                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-1.5 text-xs text-zinc-100"
                     />
                   </div>
                 </div>
 
-                <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
-                  <span className="text-slate-400">ตัวอย่างชื่อไฟล์:</span>
+                <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs flex items-center justify-between">
+                  <span className="text-zinc-400">ตัวอย่างชื่อไฟล์:</span>
                   <span className="font-mono text-emerald-400 font-bold">
                     {namingPreview || 'AFF_20261028_001.mp4'}
                   </span>
@@ -1258,7 +1256,7 @@ export default function Home() {
                 <button
                   onClick={handleSaveSettings}
                   disabled={loading}
-                  className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-xl shadow-md"
+                  className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white text-xs font-semibold rounded-xl shadow-md"
                 >
                   {loading ? 'กำลังบันทึก...' : 'บันทึกการตั้งค่า'}
                 </button>
@@ -1273,14 +1271,14 @@ export default function Home() {
       {/* ======================================================== */}
       {playingVideo && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-slate-100 truncate pr-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl">
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-zinc-100 truncate pr-4">
                 {playingVideo.title}
               </h3>
               <button
                 onClick={() => setPlayingVideo(null)}
-                className="text-slate-400 hover:text-white"
+                className="text-zinc-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1302,14 +1300,14 @@ export default function Home() {
       {/* ======================================================== */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h3 className="text-base font-bold text-zinc-100">
                 เพิ่มคลิปวิดีโอเข้าโฟลเดอร์สินค้า
               </h3>
               <button
                 onClick={() => setIsUploadModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-zinc-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1344,13 +1342,13 @@ export default function Home() {
               className="space-y-4"
             >
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
                   สินค้าที่ระบุ
                 </label>
                 <select
                   name="product_id"
                   defaultValue={targetProductIdForUpload}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-zinc-100"
                 >
                   <option value="">-- ไม่ระบุสินค้า --</option>
                   {products.map((p) => (
@@ -1362,7 +1360,7 @@ export default function Home() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
                   ไฟล์วิดีโอต้นฉบับ (.mp4, .mov) *
                 </label>
                 <input
@@ -1370,31 +1368,31 @@ export default function Home() {
                   name="file"
                   accept="video/*"
                   required
-                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-500"
+                  className="w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-600 file:text-white hover:file:bg-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
                   ไฟล์เสียงพากย์ (Voice Over .mp3) - ไม่จำเป็น
                 </label>
                 <input
                   type="file"
                   name="voice_file"
                   accept="audio/*"
-                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700"
+                  className="w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
                   แคปชั่นสำหรับโพสต์
                 </label>
                 <textarea
                   name="caption"
                   rows={2}
                   placeholder="เว้นว่างไว้เพื่อสร้างอัตโนมัติ..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-2.5 text-xs text-zinc-100"
                 />
               </div>
 
@@ -1402,14 +1400,14 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setIsUploadModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl"
+                  className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold rounded-xl shadow-md"
                 >
                   {loading ? 'กำลังบันทึก...' : 'บันทึกเข้าสินค้า'}
                 </button>
@@ -1424,24 +1422,24 @@ export default function Home() {
       {/* ======================================================== */}
       {editingVideo && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-100">แก้ไขแคปชั่น & ข้อมูลคลิป</h3>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
+                <h3 className="text-base font-bold text-zinc-100">แก้ไขแคปชั่น & ข้อมูลคลิป</h3>
+                <p className="text-xs text-zinc-400 font-mono mt-0.5">
                   {editingVideo.source_filename}
                 </p>
               </div>
               <button
                 onClick={() => setEditingVideo(null)}
-                className="text-slate-400 hover:text-white"
+                className="text-zinc-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-slate-300">
+              <label className="block text-xs font-medium text-zinc-300">
                 แคปชั่น TikTok & Hashtags
               </label>
               <textarea
@@ -1450,14 +1448,14 @@ export default function Home() {
                 onChange={(e) =>
                   setEditingVideo({ ...editingVideo, caption_text: e.target.value })
                 }
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-slate-100"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-3 text-xs text-zinc-100"
               />
             </div>
 
             <div className="pt-2 flex justify-end gap-2.5">
               <button
                 onClick={() => setEditingVideo(null)}
-                className="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl"
+                className="px-4 py-2 bg-zinc-800 text-zinc-300 text-xs font-semibold rounded-xl"
               >
                 ยกเลิก
               </button>
@@ -1484,7 +1482,7 @@ export default function Home() {
                     setLoading(false);
                   }
                 }}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold rounded-xl"
               >
                 บันทึก
               </button>
@@ -1498,64 +1496,64 @@ export default function Home() {
       {/* ======================================================== */}
       {isSettingsModalOpen && settings && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                  <SettingsIcon className="w-5 h-5 text-purple-400" />
+                <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
+                  <SettingsIcon className="w-5 h-5 text-teal-400" />
                   <span>ตั้งค่าระบบและโฟลเดอร์</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   กำหนดโฟลเดอร์สินค้าและรูปแบบชื่อไฟล์ Output
                 </p>
               </div>
               <button
                 onClick={() => setIsSettingsModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-zinc-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-              <div className="space-y-2 border-t border-slate-800 pt-4">
-                <label htmlFor="storage-root-modal" className="block text-xs font-semibold text-slate-200">Product storage folder</label>
+              <div className="space-y-2 border-t border-zinc-800 pt-4">
+                <label htmlFor="storage-root-modal" className="block text-xs font-semibold text-zinc-200">Product storage folder</label>
                 <div className="flex gap-2">
-                  <input id="storage-root-modal" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="min-w-0 flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
-                  <button type="button" onClick={handleChooseStorageFolder} disabled={choosingFolder} className="flex items-center gap-1.5 rounded-xl border border-slate-600 px-3 py-2 text-xs text-slate-100 hover:bg-slate-800 disabled:opacity-50"><FolderOpen className="h-4 w-4" />{choosingFolder ? 'Choosing...' : 'Choose folder'}</button>
+                  <input id="storage-root-modal" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="min-w-0 flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-xs font-mono text-zinc-100" />
+                  <button type="button" onClick={handleChooseStorageFolder} disabled={choosingFolder} className="flex items-center gap-1.5 rounded-xl border border-zinc-600 px-3 py-2 text-xs text-zinc-100 hover:bg-zinc-800 disabled:opacity-50"><FolderOpen className="h-4 w-4" />{choosingFolder ? 'Choosing...' : 'Choose folder'}</button>
                 </div>
-                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose an empty folder on the same drive.</p>
+                <p className="text-xs text-zinc-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose an empty folder on the same drive.</p>
               </div>
 
             {/* Naming Rules */}
-            <div className="space-y-3 pt-3 border-t border-slate-800">
-              <label className="block text-xs font-semibold text-slate-200">
+            <div className="space-y-3 pt-3 border-t border-zinc-800">
+              <label className="block text-xs font-semibold text-zinc-200">
                 การตั้งชื่อไฟล์ Output จาก FFmpeg
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Prefix</label>
+                  <label className="block text-[11px] text-zinc-400 mb-1">Prefix</label>
                   <input
                     type="text"
                     value={settings.prefix}
                     onChange={(e) =>
                       setSettings({ ...settings, prefix: e.target.value.toUpperCase() })
                     }
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-100"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-1.5 text-xs text-zinc-100"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">ตัวคั่น</label>
+                  <label className="block text-[11px] text-zinc-400 mb-1">ตัวคั่น</label>
                   <select
                     value={settings.separator}
                     onChange={(e) => setSettings({ ...settings, separator: e.target.value })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-100"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-2 py-1.5 text-xs text-zinc-100"
                   >
                     <option value="_">_ (ขีดล่าง)</option>
                     <option value="-">- (ขีดกลาง)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">วันที่</label>
+                  <label className="block text-[11px] text-zinc-400 mb-1">วันที่</label>
                   <select
                     value={settings.date_format}
                     onChange={(e) =>
@@ -1564,7 +1562,7 @@ export default function Home() {
                         date_format: e.target.value as AppSettings['date_format'],
                       })
                     }
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-100"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-2 py-1.5 text-xs text-zinc-100"
                   >
                     <option value="YYYYMMDD">YYYYMMDD</option>
                     <option value="YYMMDD">YYMMDD</option>
@@ -1572,7 +1570,7 @@ export default function Home() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">ลำดับถัดไป</label>
+                  <label className="block text-[11px] text-zinc-400 mb-1">ลำดับถัดไป</label>
                   <input
                     type="number"
                     value={settings.sequence_number}
@@ -1582,13 +1580,13 @@ export default function Home() {
                         sequence_number: parseInt(e.target.value, 10) || 1,
                       })
                     }
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-100"
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-1.5 text-xs text-zinc-100"
                   />
                 </div>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
-                <span className="text-slate-400">ตัวอย่างชื่อไฟล์ output:</span>
+              <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800 text-xs flex items-center justify-between">
+                <span className="text-zinc-400">ตัวอย่างชื่อไฟล์ output:</span>
                 <span className="font-mono text-emerald-400 font-bold">
                   {namingPreview || 'AFF_20261028_001.mp4'}
                 </span>
@@ -1598,13 +1596,13 @@ export default function Home() {
             <div className="pt-2 flex justify-end gap-2.5">
               <button
                 onClick={() => setIsSettingsModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 text-slate-300 text-xs font-semibold rounded-xl"
+                className="px-4 py-2 bg-zinc-800 text-zinc-300 text-xs font-semibold rounded-xl"
               >
                 ปิด
               </button>
               <button
                 onClick={handleSaveSettings}
-                className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-xl"
+                className="px-5 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold rounded-xl"
               >
                 บันทึกการตั้งค่า
               </button>
@@ -1617,7 +1615,7 @@ export default function Home() {
       {/* TOAST NOTIFICATION */}
       {/* ======================================================== */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-slate-900 border border-slate-700 text-white rounded-2xl shadow-2xl text-xs font-medium animate-in fade-in slide-in-from-bottom-2">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-zinc-900 border border-zinc-700 text-white rounded-2xl shadow-2xl text-xs font-medium animate-in fade-in slide-in-from-bottom-2">
           {toast.type === 'success' && <Check className="w-4 h-4 text-emerald-400" />}
           {toast.type === 'error' && <XCircle className="w-4 h-4 text-rose-400" />}
           {toast.type === 'info' && <AlertTriangle className="w-4 h-4 text-amber-400" />}
