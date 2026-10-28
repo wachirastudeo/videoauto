@@ -100,6 +100,7 @@ export default function Home() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [targetProductIdForUpload, setTargetProductIdForUpload] = useState<string>('');
+  const [uploadProgress, setUploadProgress] = useState('');
   const [editingVideo, setEditingVideo] = useState<VideoRecord | null>(null);
   const [playingVideo, setPlayingVideo] = useState<{ url: string; title: string } | null>(null);
   const [expandedProductIds, setExpandedProductIds] = useState<string[]>([]);
@@ -957,7 +958,7 @@ export default function Home() {
                             className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-600/90 hover:bg-teal-500 text-white rounded-lg text-xs font-semibold shadow-md transition-all"
                           >
                             <PlusCircle className="w-3.5 h-3.5" />
-                            <span>เพิ่มคลิปใหม่</span>
+                            <span>Add source videos</span>
                           </button>
                         </div>
                       </article>
@@ -1321,10 +1322,11 @@ export default function Home() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <h3 className="text-base font-bold text-zinc-100">
-                เพิ่มคลิปวิดีโอเข้าโฟลเดอร์สินค้า
+                Add source videos to a product
               </h3>
               <button
                 onClick={() => setIsUploadModalOpen(false)}
+                disabled={loading}
                 className="text-zinc-400 hover:text-white"
               >
                 <X className="w-5 h-5" />
@@ -1336,25 +1338,29 @@ export default function Home() {
                 e.preventDefault();
                 const form = e.currentTarget;
                 const formData = new FormData(form);
+                const files = formData.getAll('files').filter((item): item is File => item instanceof File && item.size > 0);
+                if (files.length === 0) return;
                 setLoading(true);
+                let saved = 0;
                 try {
-                  const res = await fetch('/api/videos', {
-                    method: 'POST',
-                    body: formData,
-                  });
-                  const data = await res.json();
-                  if (data.success) {
-                    showToast(data.message, 'success');
-                    setIsUploadModalOpen(false);
-                    fetchVideos();
-                    fetchProducts();
-                  } else {
-                    showToast(data.error || 'อัปโหลดล้มเหลว', 'error');
+                  for (const [index, file] of files.entries()) {
+                    setUploadProgress(`Saving ${index + 1} of ${files.length}: ${file.name}`);
+                    const upload = new FormData();
+                    upload.set('product_id', String(formData.get('product_id') || ''));
+                    upload.set('file', file);
+                    const res = await fetch('/api/videos', { method: 'POST', body: upload });
+                    const data = await res.json();
+                    if (!res.ok || !data.success) throw new Error(data.error || `Could not save ${file.name}`);
+                    saved++;
                   }
-                } catch {
-                  showToast('เกิดข้อผิดพลาดในการอัปโหลด', 'error');
+                  showToast(`Saved ${saved} source video${saved === 1 ? '' : 's'} for AI editing`, 'success');
+                  setIsUploadModalOpen(false);
+                } catch (error) {
+                  showToast(`${saved} of ${files.length} saved. ${error instanceof Error ? error.message : 'Upload failed'}`, 'error');
                 } finally {
                   setLoading(false);
+                  setUploadProgress('');
+                  void Promise.all([fetchVideos(), fetchProducts()]);
                 }
               }}
               className="space-y-4"
@@ -1379,45 +1385,26 @@ export default function Home() {
 
               <div>
                 <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  ไฟล์วิดีโอต้นฉบับ (.mp4, .mov) *
+                  Source videos (select one or more) *
                 </label>
                 <input
                   type="file"
-                  name="file"
+                  name="files"
                   accept="video/*"
+                  multiple
                   required
                   className="w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-600 file:text-white hover:file:bg-teal-500"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  ไฟล์เสียงพากย์ (Voice Over .mp3) - ไม่จำเป็น
-                </label>
-                <input
-                  type="file"
-                  name="voice_file"
-                  accept="audio/*"
-                  className="w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  แคปชั่นสำหรับโพสต์
-                </label>
-                <textarea
-                  name="caption"
-                  rows={2}
-                  placeholder="เว้นว่างไว้เพื่อสร้างอัตโนมัติ..."
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-2.5 text-xs text-zinc-100"
-                />
-              </div>
+              <p className="text-xs text-zinc-400">Files are saved in the product&apos;s <code>input/</code> folder for AI editing. Nothing is posted to TikTok.</p>
+              {uploadProgress && <p role="status" className="text-xs text-teal-300">{uploadProgress}</p>}
 
               <div className="pt-2 flex justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsUploadModalOpen(false)}
+                  disabled={loading}
                   className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold rounded-xl"
                 >
                   ยกเลิก
@@ -1427,7 +1414,7 @@ export default function Home() {
                   disabled={loading}
                   className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold rounded-xl shadow-md"
                 >
-                  {loading ? 'กำลังบันทึก...' : 'บันทึกเข้าสินค้า'}
+                  {loading ? 'Saving videos...' : 'Save source videos'}
                 </button>
               </div>
             </form>

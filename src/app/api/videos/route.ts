@@ -45,6 +45,9 @@ export async function POST(req: NextRequest) {
     if (!file) {
       return NextResponse.json({ success: false, error: 'No video file uploaded' }, { status: 400 });
     }
+    if (!['.mp4', '.mov', '.avi', '.mkv', '.webm'].includes(path.extname(file.name).toLowerCase())) {
+      return NextResponse.json({ success: false, error: 'Choose a video file (MP4, MOV, AVI, MKV, or WebM)' }, { status: 400 });
+    }
 
     const db = getDb();
     let productDir = '';
@@ -93,7 +96,7 @@ export async function POST(req: NextRequest) {
     const thumbPath = await generateThumbnail(filePath, inputDir);
 
     const videoId = `vid_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const finalCaption = caption || (productRow ? `รีวิว ${productRow.name} คุ้มค่า คุณภาพดี ห้ามพลาด! #TikTokShop #นายหน้าTikTok` : '');
+    const finalCaption = caption || null;
 
     db.prepare(`
       INSERT INTO videos (
