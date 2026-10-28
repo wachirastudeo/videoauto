@@ -19,6 +19,7 @@ import {
   Check,
   FolderCheck,
   FolderOpen,
+  Trash2,
   ChevronDown,
   ChevronUp,
   XCircle,
@@ -85,6 +86,7 @@ interface AppSettings {
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'queue' | 'history' | 'settings'>('dashboard');
   const [products, setProducts] = useState<ShowcaseProduct[]>([]);
+  const [hiddenProducts, setHiddenProducts] = useState<ShowcaseProduct[]>([]);
   const [videos, setVideos] = useState<VideoRecord[]>([]);
   const [history, setHistory] = useState<PublishingHistoryItem[]>([]);
   const [settings, setSettings] = useState<AppSettings | null>(null);
@@ -124,10 +126,11 @@ export default function Home() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const res = await fetch('/api/showcase');
-      const data = await res.json();
-      if (data.success) {
+      const [res, hiddenRes] = await Promise.all([fetch('/api/showcase'), fetch('/api/showcase?hidden=1')]);
+      const [data, hiddenData] = await Promise.all([res.json(), hiddenRes.json()]);
+      if (data.success && hiddenData.success) {
         setProducts(data.products);
+        setHiddenProducts(hiddenData.products);
         // ขยายการ์ดที่มีคลิปโดยอัตโนมัติ
         setExpandedProductIds(data.products.map((p: ShowcaseProduct) => p.id));
       }
@@ -211,6 +214,35 @@ export default function Home() {
       showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRemoveProduct = async (product: ShowcaseProduct) => {
+    if (!window.confirm(`Remove "${product.name}" from VideoAuto? Local videos and folders will stay. This will not remove it from TikTok Shop.`)) return;
+    try {
+      const res = await fetch(`/api/showcase/${encodeURIComponent(product.id)}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hidden: true }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Could not remove product');
+      await fetchProducts();
+      showToast('Product removed from VideoAuto', 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Could not remove product', 'error');
+    }
+  };
+
+  const handleRestoreProduct = async (product: ShowcaseProduct) => {
+    try {
+      const res = await fetch(`/api/showcase/${encodeURIComponent(product.id)}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hidden: false }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Could not restore product');
+      await fetchProducts();
+      showToast('Product restored in VideoAuto', 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Could not restore product', 'error');
     }
   };
 
@@ -557,6 +589,19 @@ export default function Home() {
           {/* ======================================================== */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
+              {hiddenProducts.length > 0 && (
+                <details className="bg-slate-900/70 rounded-2xl border border-slate-800 p-4 text-xs text-slate-300">
+                  <summary className="cursor-pointer font-semibold">Removed from VideoAuto ({hiddenProducts.length})</summary>
+                  <div className="mt-3 space-y-2">
+                    {hiddenProducts.map((product) => (
+                      <div key={product.id} className="flex items-center justify-between gap-3 border-t border-slate-800 pt-2">
+                        <span className="truncate">{product.name}</span>
+                        <button type="button" onClick={() => handleRestoreProduct(product)} className="shrink-0 text-purple-300 hover:text-white underline">Restore</button>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              )}
               {/* Summary Banner */}
               <div className="bg-slate-900/70 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs shadow-md">
                 <div className="flex items-center gap-3">
@@ -690,6 +735,14 @@ export default function Home() {
                             <div className="text-[10px] text-slate-500 bg-slate-950/60 p-2 rounded-lg font-mono truncate border border-slate-800/70">
                               📁 {prod.folder_path}
                             </div>
+                            <a
+                              href="https://shop.tiktok.com/streamer/showcase/product/list"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-block text-[11px] text-purple-300 hover:text-purple-200 underline"
+                            >
+                              Manage or remove on TikTok Shop
+                            </a>
 
                             {/* 3. Embedded Videos Inside This Product */}
                             <div className="pt-2 border-t border-slate-800/80 space-y-2.5">
@@ -866,10 +919,19 @@ export default function Home() {
                         </div>
 
                         {/* Card Footer: Add video into this product */}
-                        <div className="p-4 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between">
+                        <div className="p-4 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between gap-2">
                           <span className="text-[11px] text-slate-400">
                             โฟลเดอร์: <code>input/</code>
                           </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveProduct(prod)}
+                            className="flex items-center gap-1 px-2 py-1.5 text-rose-300 hover:text-white hover:bg-rose-700 rounded-lg text-[11px]"
+                            title="Remove from VideoAuto only; keep files and TikTok Showcase"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Remove locally</span>
+                          </button>
                           <button
                             onClick={() => {
                               setTargetProductIdForUpload(prod.id);

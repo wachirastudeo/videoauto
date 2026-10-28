@@ -77,6 +77,11 @@ function initTables(db: ExtendedDatabase) {
   } catch {
     // column already exists
   }
+  try {
+    db.exec('ALTER TABLE showcase_products ADD COLUMN hidden_locally INTEGER DEFAULT 0;');
+  } catch {
+    // column already exists
+  }
 
   // Videos (One product to many videos)
   db.exec(`
