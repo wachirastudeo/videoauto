@@ -246,6 +246,16 @@ export default function Home() {
     }
   };
 
+  const handleOpenProductFolder = async (product: ShowcaseProduct) => {
+    try {
+      const res = await fetch(`/api/showcase/${encodeURIComponent(product.id)}/open-folder`, { method: 'POST' });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Could not open folder');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Could not open folder', 'error');
+    }
+  };
+
   // Scan local folders
   const handleScanFolders = async () => {
     setLoading(true);
@@ -729,9 +739,16 @@ export default function Home() {
 
                             {/* Storage folder and TikTok management */}
                             <div className="flex items-center gap-2">
-                              <div className="min-w-0 flex-1 text-[10px] text-zinc-400 bg-zinc-950/60 p-2.5 rounded-lg font-mono truncate border border-zinc-800/70" title={prod.folder_path}>
-                                📁 {prod.folder_path}
-                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleOpenProductFolder(prod)}
+                                aria-label={`Open folder for ${prod.name} in Finder`}
+                                title={`Open in Finder: ${prod.folder_path}`}
+                                className="min-w-0 flex-1 flex items-center gap-2 text-left text-[10px] text-zinc-300 hover:text-teal-200 hover:border-teal-500/40 bg-zinc-950/60 p-2.5 rounded-lg font-mono border border-zinc-800/70 transition-colors"
+                              >
+                                <FolderOpen className="h-4 w-4 shrink-0" aria-hidden="true" />
+                                <span className="truncate">{prod.folder_path}</span>
+                              </button>
                               <a
                                 href="https://shop.tiktok.com/streamer/showcase/product/list"
                                 target="_blank"
