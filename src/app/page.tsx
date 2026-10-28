@@ -728,20 +728,22 @@ export default function Home() {
                               )}
                             </div>
 
-                            {/* Storage Folder Path */}
-                            <div className="text-[10px] text-zinc-400 bg-zinc-950/60 p-2.5 rounded-lg font-mono truncate border border-zinc-800/70" title={prod.folder_path}>
-                              📁 {prod.folder_path}
+                            {/* Storage folder and TikTok management */}
+                            <div className="flex items-center gap-2">
+                              <div className="min-w-0 flex-1 text-[10px] text-zinc-400 bg-zinc-950/60 p-2.5 rounded-lg font-mono truncate border border-zinc-800/70" title={prod.folder_path}>
+                                📁 {prod.folder_path}
+                              </div>
+                              <a
+                                href="https://shop.tiktok.com/streamer/showcase/product/list"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`Manage ${prod.name} in TikTok Showcase`}
+                                title="Remove from TikTok Showcase (opens TikTok Shop)"
+                                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-500/25 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 transition-colors"
+                              >
+                                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                              </a>
                             </div>
-                            <a
-                              href="https://shop.tiktok.com/streamer/showcase/product/list"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="showcase-link flex items-center justify-between gap-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3.5 py-2.5 text-xs font-semibold text-amber-100 hover:bg-amber-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 transition-colors"
-                            >
-                              <span className="flex items-center gap-2"><ExternalLink className="h-4 w-4" />Remove from TikTok Showcase</span>
-                              <span aria-hidden="true">↗</span>
-                            </a>
-                            <p className="text-[10px] leading-relaxed text-zinc-400">Opens TikTok Shop. Remove it there, then sync to update this list. Your videos and folders stay on disk.</p>
 
                             {/* 3. Embedded Videos Inside This Product */}
                             <div className="pt-2 border-t border-zinc-800/80 space-y-2.5">
