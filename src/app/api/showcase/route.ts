@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
         COUNT(v.id) as video_count
       FROM showcase_products p
       LEFT JOIN videos v ON v.product_id = p.id
-      WHERE p.sync_source = ? AND COALESCE(p.hidden_locally, 0) = ?
+      WHERE p.sync_source = ? AND p.is_available = 1 AND COALESCE(p.hidden_locally, 0) = ?
       GROUP BY p.id
       ORDER BY p.created_at DESC
     `).all(mode, includeHidden ? 1 : 0);

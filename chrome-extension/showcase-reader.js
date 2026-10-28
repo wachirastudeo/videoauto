@@ -35,7 +35,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
       if (page.length === 0 || offset + page.length >= Number(json.data?.total || 0)) break;
     }
-    if (products.length === 0) throw new Error('No products found in your TikTok Showcase.');
     sendResponse({ success: true, products });
   })().catch((error) => sendResponse({ success: false, error: error.message }));
   return true;

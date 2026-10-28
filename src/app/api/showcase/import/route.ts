@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Showcase bridge required' }, { status: 403 });
     }
     const body = await req.json() as { products?: ImportedProduct[] };
-    if (!Array.isArray(body.products) || body.products.length === 0 || body.products.length > 2000) {
+    if (!Array.isArray(body.products) || body.products.length > 2000) {
       return NextResponse.json({ success: false, error: 'Invalid Showcase product list' }, { status: 400 });
     }
     const products = body.products.map((p) => ({
@@ -42,10 +42,16 @@ export async function POST(req: NextRequest) {
         raw_api_data = excluded.raw_api_data, folder_path = excluded.folder_path,
         sync_source = 'studio', is_available = 1, last_synced_at = datetime('now'), updated_at = datetime('now')
     `);
-    for (const product of products) {
+    const prepared = products.map((product) => {
       const folder = ensureProductFolder(product.id, product.name);
-      upsert.run(crypto.randomUUID(), product.id, product.name, product.image, product.price, JSON.stringify(product.raw), folder.productDir);
-    }
+      return { ...product, folderPath: folder.productDir };
+    });
+    db.transaction(() => {
+      db.prepare("UPDATE showcase_products SET is_available = 0, updated_at = datetime('now') WHERE sync_source = 'studio'").run();
+      for (const product of prepared) {
+        upsert.run(crypto.randomUUID(), product.id, product.name, product.image, product.price, JSON.stringify(product.raw), product.folderPath);
+      }
+    })();
     db.prepare("UPDATE settings SET tiktok_api_mode = 'studio', updated_at = datetime('now') WHERE id = 'default'").run();
     return NextResponse.json({ success: true, message: `Synced ${products.length} real Showcase products`, syncedCount: products.length });
   } catch (error) {

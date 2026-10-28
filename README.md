@@ -64,6 +64,7 @@ npm run start
 1. In normal Google Chrome, open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select this project's `chrome-extension/` folder. This one-time bridge can read your signed-in TikTok Showcase and send product data to the app running on `localhost:3000`. It does not copy cookies or tokens into the app.
 2. Open `http://localhost:3000` in that same Chrome profile and select **Sync Showcase**. The bridge reads all Showcase pages and imports real product IDs. If TikTok needs login, it opens the Showcase page; sign in there and select **Sync Showcase** again.
 3. If the Showcase tab was already open when you installed the extension, reload it once.
+4. To remove a product from the live Showcase, use **Remove from TikTok Showcase** on its VideoAuto card, remove it in the signed-in TikTok Shop tab, then select **Sync Showcase**. The app removes products absent from TikTok from its active list while retaining local videos and folders. **Remove locally** only hides a card in VideoAuto and can be restored.
 
 Product folders are created under `storage/TikTok-Affiliate/products/` by default. In **Settings → Product storage folder**, use **Choose folder** or enter a path to move existing product folders and update their video paths. Choose an empty folder on the same drive.
 

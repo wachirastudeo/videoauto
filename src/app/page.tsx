@@ -741,8 +741,9 @@ export default function Home() {
                               rel="noopener noreferrer"
                               className="inline-block text-[11px] text-purple-300 hover:text-purple-200 underline"
                             >
-                              Manage or remove on TikTok Shop
+                              Remove from TikTok Showcase ↗
                             </a>
+                            <p className="text-[10px] text-slate-500">After removing it on TikTok, click Sync Showcase to update this list. Videos and folders stay on disk.</p>
 
                             {/* 3. Embedded Videos Inside This Product */}
                             <div className="pt-2 border-t border-slate-800/80 space-y-2.5">
