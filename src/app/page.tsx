@@ -18,6 +18,7 @@ import {
   X,
   Check,
   FolderCheck,
+  FolderOpen,
   ChevronDown,
   ChevronUp,
   XCircle,
@@ -90,6 +91,7 @@ export default function Home() {
   const [resolvedStorageRoot, setResolvedStorageRoot] = useState('');
   const [namingPreview, setNamingPreview] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [choosingFolder, setChoosingFolder] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Modals
@@ -252,6 +254,23 @@ export default function Home() {
       showToast('เกิดข้อผิดพลาดระหว่างตัดต่อ', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChooseStorageFolder = async () => {
+    setChoosingFolder(true);
+    try {
+      const res = await fetch('/api/storage/pick-folder', { method: 'POST' });
+      const data = await res.json();
+      if (data.success && data.path) {
+        setSettings((current) => current ? { ...current, storage_root: data.path } : current);
+      } else if (!data.cancelled) {
+        showToast(data.error || 'Could not open folder picker', 'error');
+      }
+    } catch {
+      showToast('Could not open folder picker', 'error');
+    } finally {
+      setChoosingFolder(false);
     }
   };
 
@@ -1096,8 +1115,11 @@ export default function Home() {
 
               <div className="space-y-2 border-t border-slate-800 pt-4">
                 <label htmlFor="storage-root-settings" className="block text-xs font-semibold text-slate-200">Product storage folder</label>
-                <input id="storage-root-settings" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
-                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose a new path on the same drive.</p>
+                <div className="flex gap-2">
+                  <input id="storage-root-settings" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="min-w-0 flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
+                  <button type="button" onClick={handleChooseStorageFolder} disabled={choosingFolder} className="flex items-center gap-1.5 rounded-xl border border-slate-600 px-3 py-2 text-xs text-slate-100 hover:bg-slate-800 disabled:opacity-50"><FolderOpen className="h-4 w-4" />{choosingFolder ? 'Choosing...' : 'Choose folder'}</button>
+                </div>
+                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose an empty folder on the same drive.</p>
               </div>
 
             {/* Naming Rules */}
@@ -1434,8 +1456,11 @@ export default function Home() {
 
               <div className="space-y-2 border-t border-slate-800 pt-4">
                 <label htmlFor="storage-root-modal" className="block text-xs font-semibold text-slate-200">Product storage folder</label>
-                <input id="storage-root-modal" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
-                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose a new path on the same drive.</p>
+                <div className="flex gap-2">
+                  <input id="storage-root-modal" type="text" value={settings.storage_root} onChange={(e) => setSettings({ ...settings, storage_root: e.target.value })} className="min-w-0 flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-100" />
+                  <button type="button" onClick={handleChooseStorageFolder} disabled={choosingFolder} className="flex items-center gap-1.5 rounded-xl border border-slate-600 px-3 py-2 text-xs text-slate-100 hover:bg-slate-800 disabled:opacity-50"><FolderOpen className="h-4 w-4" />{choosingFolder ? 'Choosing...' : 'Choose folder'}</button>
+                </div>
+                <p className="text-xs text-slate-400">Current location: {resolvedStorageRoot}. Changing this path moves existing folders and updates video paths. Choose an empty folder on the same drive.</p>
               </div>
 
             {/* Naming Rules */}

@@ -69,14 +69,19 @@ export async function POST(req: NextRequest) {
     if (moving && (newRoot === path.parse(newRoot).root || newRoot.startsWith(oldRoot + path.sep) || oldRoot.startsWith(newRoot + path.sep))) {
       return NextResponse.json({ success: false, error: 'Choose a separate storage folder' }, { status: 400 });
     }
-    if (moving && fs.existsSync(newRoot)) {
-      return NextResponse.json({ success: false, error: 'Destination already exists. Choose a new folder path.' }, { status: 409 });
+    if (moving && fs.existsSync(newRoot) && (!fs.statSync(newRoot).isDirectory() || fs.readdirSync(newRoot).length > 0)) {
+      return NextResponse.json({ success: false, error: 'Choose an empty destination folder.' }, { status: 409 });
     }
     let moved = false;
+    let removedEmptyTarget = false;
     let transactionStarted = false;
     try {
       if (moving && fs.existsSync(oldRoot)) {
         fs.mkdirSync(path.dirname(newRoot), { recursive: true });
+        if (fs.existsSync(newRoot)) {
+          fs.rmdirSync(newRoot);
+          removedEmptyTarget = true;
+        }
         fs.renameSync(oldRoot, newRoot);
         moved = true;
       }
@@ -121,6 +126,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
       if (transactionStarted) db.exec('ROLLBACK');
       if (moved) fs.renameSync(newRoot, oldRoot);
+      if (removedEmptyTarget) fs.mkdirSync(newRoot);
       throw error;
     }
 
