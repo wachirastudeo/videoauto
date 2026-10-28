@@ -19,7 +19,6 @@ import {
   Check,
   FolderCheck,
   FolderOpen,
-  ExternalLink,
   Trash2,
   ChevronDown,
   ChevronUp,
@@ -737,11 +736,11 @@ export default function Home() {
                                 href="https://shop.tiktok.com/streamer/showcase/product/list"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                aria-label={`Manage ${prod.name} in TikTok Showcase`}
+                                aria-label={`Remove ${prod.name} from TikTok Showcase (opens TikTok Shop)`}
                                 title="Remove from TikTok Showcase (opens TikTok Shop)"
-                                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-500/25 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 transition-colors"
+                                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-500/25 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-400 transition-colors"
                               >
-                                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                                <Trash2 className="h-4 w-4" aria-hidden="true" />
                               </a>
                             </div>
 
