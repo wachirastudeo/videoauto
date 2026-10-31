@@ -1,9 +1,6 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type !== 'READ_SHOWCASE') return;
   (async () => {
-    if (!location.pathname.startsWith('/streamer/showcase/product/list')) {
-      throw new Error('Please log in to TikTok Shop and open Showcase Products, then click Sync again.');
-    }
     const products = [];
     const seen = new Set();
     for (let offset = 0; offset < 2000; offset += 100) {

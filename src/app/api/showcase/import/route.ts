@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid Showcase product data' }, { status: 400 });
     }
     const db = getDb();
+    const previousIds = db.prepare("SELECT platform_product_id FROM showcase_products WHERE sync_source = 'studio' AND is_available = 1").all() as { platform_product_id: string }[];
+    const incomingIds = new Set(products.map(product => product.id));
+    const removedCount = previousIds.filter(product => !incomingIds.has(product.platform_product_id)).length;
     const upsert = db.prepare(`
       INSERT INTO showcase_products (id, platform_product_id, name, image_url, price, raw_api_data, folder_path, sync_source, is_available, last_synced_at, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, 'studio', 1, datetime('now'), datetime('now'), datetime('now'))
@@ -53,7 +56,7 @@ export async function POST(req: NextRequest) {
       }
     })();
     db.prepare("UPDATE settings SET tiktok_api_mode = 'studio', updated_at = datetime('now') WHERE id = 'default'").run();
-    return NextResponse.json({ success: true, message: `Synced ${products.length} real Showcase products`, syncedCount: products.length });
+    return NextResponse.json({ success: true, message: `Synced ${products.length} real Showcase products and prepared their folders`, syncedCount: products.length, removedCount });
   } catch (error) {
     return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Showcase import failed' }, { status: 500 });
   }

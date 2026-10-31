@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import VoiceRecorder from '@/components/VoiceRecorder';
+import Link from 'next/link';
+import AiSettings from '@/components/AiSettings';
 import {
   ShoppingBag,
+  Mic,
   Film,
   UploadCloud,
   Settings as SettingsIcon,
   RefreshCw,
-  FolderSync,
   PlusCircle,
   Play,
   Clock,
@@ -86,6 +87,12 @@ interface AppSettings {
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'videos' | 'queue' | 'history' | 'settings'>('dashboard');
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      if (new URLSearchParams(window.location.search).get('tab') === 'settings') setActiveTab('settings');
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
   const [products, setProducts] = useState<ShowcaseProduct[]>([]);
   const [hiddenProducts, setHiddenProducts] = useState<ShowcaseProduct[]>([]);
   const [videos, setVideos] = useState<VideoRecord[]>([]);
@@ -94,6 +101,7 @@ export default function Home() {
   const [resolvedStorageRoot, setResolvedStorageRoot] = useState('');
   const [namingPreview, setNamingPreview] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<{ error: boolean; text: string } | null>(null);
   const [choosingFolder, setChoosingFolder] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -102,7 +110,6 @@ export default function Home() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [targetProductIdForUpload, setTargetProductIdForUpload] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState('');
-  const [voiceProduct, setVoiceProduct] = useState<ShowcaseProduct | null>(null);
   const [editingVideo, setEditingVideo] = useState<VideoRecord | null>(null);
   const [playingVideo, setPlayingVideo] = useState<{ url: string; title: string } | null>(null);
   const [expandedProductIds, setExpandedProductIds] = useState<string[]>([]);
@@ -129,7 +136,7 @@ export default function Home() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const [res, hiddenRes] = await Promise.all([fetch('/api/showcase'), fetch('/api/showcase?hidden=1')]);
+      const [res, hiddenRes] = await Promise.all([fetch('/api/showcase', { cache: 'no-store' }), fetch('/api/showcase?hidden=1', { cache: 'no-store' })]);
       const [data, hiddenData] = await Promise.all([res.json(), hiddenRes.json()]);
       if (data.success && hiddenData.success) {
         setProducts(data.products);
@@ -178,42 +185,20 @@ export default function Home() {
   // Sync Showcase Products
   const handleSyncShowcase = async () => {
     setLoading(true);
+    setSyncStatus({ error: false, text: 'Syncing current TikTok Showcase...' });
     try {
-      const data = await new Promise<{ success: boolean; message?: string; error?: string }>((resolve) => {
-        let bridgeReady = false;
-        const readyTimer = window.setTimeout(() => {
-          if (!bridgeReady) {
-            cleanup();
-            resolve({ success: false, error: 'Install the VideoAuto Showcase Bridge extension in Chrome, then try again.' });
-          }
-        }, 2000);
-        const resultTimer = window.setTimeout(() => {
-          cleanup();
-          resolve({ success: false, error: 'Showcase sync timed out. Try again.' });
-        }, 90000);
-        const cleanup = () => {
-          window.clearTimeout(readyTimer);
-          window.clearTimeout(resultTimer);
-          window.removeEventListener('message', onMessage);
-        };
-        const onMessage = (event: MessageEvent) => {
-          if (event.source !== window || event.origin !== window.location.origin || event.data?.source !== 'videoauto-extension') return;
-          if (event.data.type === 'SYNC_STARTED') bridgeReady = true;
-          if (event.data.type === 'SYNC_RESULT') {
-            cleanup();
-            resolve(event.data);
-          }
-        };
-        window.addEventListener('message', onMessage);
-        window.postMessage({ source: 'videoauto-app', type: 'SYNC_SHOWCASE' }, window.location.origin);
-      });
+      const response = await fetch('/api/showcase/sync', { method: 'POST' });
+      const data = await response.json();
       if (data.success) {
+        setSyncStatus({ error: false, text: `${data.message} · ${new Date().toLocaleTimeString()}` });
         showToast(data.message || 'Showcase synced', 'success');
-        await Promise.all([fetchProducts(), fetchSettings()]);
+        await Promise.all([fetchProducts(), fetchVideos(), fetchSettings()]);
       } else {
+        setSyncStatus({ error: true, text: `Sync failed. Showing the previously saved products. ${data.error || ''}` });
         showToast(data.error || 'Showcase sync failed', 'error');
       }
     } catch {
+      setSyncStatus({ error: true, text: 'Sync failed. Showing the previously saved products. Check your connection and try again.' });
       showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
     } finally {
       setLoading(false);
@@ -256,26 +241,6 @@ export default function Home() {
       if (!data.success) throw new Error(data.error || 'Could not open folder');
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Could not open folder', 'error');
-    }
-  };
-
-  // Scan local folders
-  const handleScanFolders = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/videos/scan', { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        showToast(data.message, 'success');
-        fetchVideos();
-        fetchProducts();
-      } else {
-        showToast(data.error || 'สแกนไฟล์ไม่สำเร็จ', 'error');
-      }
-    } catch {
-      showToast('เกิดข้อผิดพลาดขณะสแกน', 'error');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -500,18 +465,10 @@ export default function Home() {
             className="w-full flex items-center gap-2.5 px-3.5 py-2.5 bg-slate-950/40 hover:bg-slate-900/60 text-slate-200 border border-slate-500/30 rounded-xl text-xs font-semibold transition-all shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-slate-400 shrink-0 ${loading ? 'animate-spin' : ''}`} />
-            <span className="truncate">ซิงก์สินค้า TikTok Showcase</span>
+            <span className="truncate">ซิงก์สินค้าและสแกนไฟล์</span>
           </button>
 
-          {/* Action 2: Scan Folders */}
-          <button
-            onClick={handleScanFolders}
-            disabled={loading}
-            className="w-full flex items-center gap-2.5 px-3.5 py-2.5 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/80 rounded-xl text-xs font-semibold transition-all"
-          >
-            <FolderSync className={`w-3.5 h-3.5 text-slate-400 shrink-0 ${loading ? 'animate-spin' : ''}`} />
-            <span className="truncate">สแกนโฟลเดอร์เครื่อง</span>
-          </button>
+
 
           {/* Action 3: Add Video */}
           <button
@@ -573,16 +530,7 @@ export default function Home() {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-600 hover:bg-slate-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-slate-950/40 transition-all shrink-0"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">ซิงก์ Showcase</span>
-            </button>
-
-            <button
-              onClick={handleScanFolders}
-              disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-xl text-xs font-semibold transition-all shrink-0"
-            >
-              <FolderSync className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">สแกนเครื่อง</span>
+              <span className="hidden sm:inline">ซิงก์ทั้งหมด</span>
             </button>
 
             <button
@@ -600,6 +548,7 @@ export default function Home() {
           {/* ======================================================== */}
           {/* TAB 1: DASHBOARD (SHOWCASE 3 COLUMNS & INLINE VIDEOS) */}
           {/* ======================================================== */}
+          {syncStatus && <p role="status" className={`mb-4 rounded-xl border p-3 text-sm ${syncStatus.error ? 'border-rose-800 bg-rose-950/30 text-rose-200' : 'border-zinc-700 bg-zinc-900 text-zinc-200'}`}>{syncStatus.text}</p>}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
               {hiddenProducts.length > 0 && (
@@ -637,7 +586,7 @@ export default function Home() {
                   <ShoppingBag className="w-14 h-14 text-zinc-600 mx-auto mb-3" />
                   <h3 className="text-base font-bold text-zinc-200">ยังไม่มีสินค้าในระบบ</h3>
                   <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1 mb-5">
-                    กดปุ่ม &ldquo;ซิงก์สินค้า TikTok Showcase&rdquo; เพื่อโหลดสินค้าหน้าร้านและสร้างโฟลเดอร์ในเครื่องอัตโนมัติ
+                    กดปุ่ม &ldquo;ซิงก์สินค้าและสแกนไฟล์&rdquo; เพื่อโหลดสินค้าหน้าร้านและสร้างโฟลเดอร์ในเครื่องอัตโนมัติ
                   </p>
                   <button
                     onClick={handleSyncShowcase}
@@ -661,7 +610,9 @@ export default function Home() {
                         const parsed = JSON.parse(prod.raw_api_data);
                         shopName = parsed.seller_info?.shop_name || parsed.shop_name || '';
                         stock = parsed.stock_num ?? parsed.stock ?? 0;
-                        commission = parsed.affiliate_info?.commission_rate ?? parsed.commission_rate ?? 0;
+                        // TikTok Showcase rates use hundredths of a percent (500 = 5%).
+                        const rawRate = Number(parsed.affiliate_info?.commission_rate ?? parsed.commission_rate ?? 0);
+                        commission = Number.isFinite(rawRate) && rawRate >= 0 && rawRate <= 10000 ? rawRate / 100 : 0;
                       }
                     } catch {
                       // ignore
@@ -687,7 +638,7 @@ export default function Home() {
                                 <ShoppingBag className="w-16 h-16" />
                               </div>
                             )}
-                            <div className="absolute inset-0 bg-black/15" />
+                            <Link href={`/products/${encodeURIComponent(prod.id)}`} aria-label={`Open scripts for ${prod.name}`} className="absolute inset-0 bg-black/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white" />
 
                             {/* Price Badge */}
                             <div className="absolute top-3 right-3 bg-zinc-900/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-slate-400 border border-slate-500/30 shadow-lg">
@@ -939,7 +890,8 @@ export default function Home() {
                         </div>
 
                         {/* Card Footer: Add video into this product */}
-                        <button type="button" onClick={() => setVoiceProduct(prod)} className="mx-4 mb-3 rounded-xl border border-slate-700/50 p-2 text-sm text-slate-300 hover:bg-slate-950">Record voiceover</button>
+                        <Link href={`/products/${encodeURIComponent(prod.id)}#recorder`} aria-label={`Record voiceover for ${prod.name}`} title="Record voiceover" className="mx-4 mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-600 text-slate-200 hover:bg-slate-800"><Mic className="h-4 w-4" aria-hidden="true" /></Link>
+                        <Link href={`/products/${encodeURIComponent(prod.id)}`} className="mx-4 mb-3 rounded-xl bg-slate-700 p-2 text-center text-sm">Product details & scripts →</Link>
                         <div className="p-4 border-t border-zinc-800/80 bg-zinc-950/60 flex items-center justify-between gap-2">
                           <span className="text-[11px] text-zinc-400">
                             โฟลเดอร์: <code>input/</code>
@@ -1196,6 +1148,7 @@ export default function Home() {
                 </p>
               </div>
 
+              <AiSettings />
               <div className="space-y-2 border-t border-zinc-800 pt-4">
                 <label htmlFor="storage-root-settings" className="block text-xs font-semibold text-zinc-200">Product storage folder</label>
                 <div className="flex gap-2">
@@ -1320,7 +1273,6 @@ export default function Home() {
       {/* ======================================================== */}
       {/* MODAL: Upload New Video into Product */}
       {/* ======================================================== */}
-      {voiceProduct && <VoiceRecorder product={voiceProduct} onClose={() => setVoiceProduct(null)} />}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">

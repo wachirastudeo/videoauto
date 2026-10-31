@@ -1,8 +1,9 @@
 'use client';
 
+import ProductScripts from './ProductScripts';
 import { useEffect, useRef, useState } from 'react';
 
-export default function VoiceRecorder({ product, onClose }: { product: { id: string; name: string; folder_path: string }; onClose: () => void }) {
+export default function VoiceRecorder({ product, onClose, initialScript, inline = false }: { inline?: boolean; initialScript?: string; product: { id: string; name: string; folder_path: string }; onClose: () => void }) {
   const canvas = useRef<HTMLCanvasElement | null>(null);
   const context = useRef<AudioContext | null>(null);
   const frame = useRef(0);
@@ -44,22 +45,40 @@ export default function VoiceRecorder({ product, onClose }: { product: { id: str
       analyser.fftSize = 2048;
       audioContext.createMediaStreamSource(stream.current).connect(analyser);
       const samples = new Uint8Array(analyser.fftSize);
+      const peaks: number[] = [];
+      let lastSample = 0;
       const draw = () => {
-        analyser.getByteTimeDomainData(samples);
+        const now = audioContext.currentTime;
+        if (now - lastSample >= 0.05 && current.state === 'recording') {
+          analyser.getByteTimeDomainData(samples);
+          let peak = 0;
+          for (const value of samples) peak = Math.max(peak, Math.abs((value - 128) / 128));
+          peaks.push(peak); lastSample = now; setLevel(Math.round(peak * 100));
+        }
         const surface = canvas.current;
         const brush = surface?.getContext('2d');
         if (surface && brush) {
-          brush.fillStyle = '#09090b'; brush.fillRect(0, 0, surface.width, surface.height);
-          brush.strokeStyle = '#cbd5e1'; brush.lineWidth = 2; brush.beginPath();
-          let peak = 0;
-          samples.forEach((value, index) => {
-            const amplitude = (value - 128) / 128;
-            peak = Math.max(peak, Math.abs(amplitude));
-            const x = index / samples.length * surface.width;
-            const y = surface.height / 2 + amplitude * surface.height / 2;
-            if (index === 0) brush.moveTo(x, y); else brush.lineTo(x, y);
-          });
-          brush.stroke(); setLevel(Math.round(peak * 100));
+          const width = surface.width, height = surface.height;
+          const windowSamples = 600;
+          const offset = Math.max(0, peaks.length - windowSamples);
+          brush.fillStyle = '#111318'; brush.fillRect(0, 0, width, height);
+          brush.font = '12px monospace'; brush.fillStyle = '#a1a1aa';
+          for (let second = Math.ceil(offset / 20); second <= (offset + windowSamples) / 20; second++) {
+            const x = (second * 20 - offset) / windowSamples * width;
+            brush.strokeStyle = '#30343c'; brush.beginPath(); brush.moveTo(x, 24); brush.lineTo(x, height); brush.stroke();
+            brush.fillText(`${second}s`, x + 4, 16);
+          }
+          const center = (height + 24) / 2;
+          brush.strokeStyle = '#64748b'; brush.beginPath(); brush.moveTo(0, center); brush.lineTo(width, center); brush.stroke();
+          brush.strokeStyle = '#cbd5e1'; brush.lineWidth = 1.5; brush.beginPath();
+          for (let i = offset; i < peaks.length; i++) {
+            const x = (i - offset) / windowSamples * width;
+            const amplitude = peaks[i] * (height - 36) / 2;
+            brush.moveTo(x, center - amplitude); brush.lineTo(x, center + amplitude);
+          }
+          brush.stroke();
+          const cursor = Math.min(width - 1, (peaks.length - offset) / windowSamples * width);
+          brush.strokeStyle = '#f87171'; brush.beginPath(); brush.moveTo(cursor, 24); brush.lineTo(cursor, height); brush.stroke();
         }
         frame.current = requestAnimationFrame(draw);
       };
@@ -139,14 +158,16 @@ export default function VoiceRecorder({ product, onClose }: { product: { id: str
     finally { setSaving(false); }
   };
   const button = 'rounded-xl px-4 py-2 text-sm font-semibold bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40';
-  return <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-    <section role="dialog" aria-modal="true" aria-labelledby="voice-title" className="w-full max-w-3xl rounded-xl border border-zinc-700 bg-zinc-900 p-6 space-y-4 text-zinc-100">
-      <h2 id="voice-title" className="font-bold text-lg">Voice studio</h2>
+  return <div className={inline ? 'w-full' : 'fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4'}>
+    <section role={inline ? "region" : "dialog"} aria-modal={inline ? undefined : true} aria-labelledby="voice-title" className="w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-xl border border-zinc-700 bg-zinc-900 p-6 space-y-4 text-zinc-100">
+      <h2 id="voice-title" className="font-bold text-lg">Voice studio · Audio track</h2>
       <p className="text-sm text-slate-300">{product.name}</p>
       <p className="text-xs text-zinc-400 break-all">Save to: {product.folder_path}/voice/</p>
+      {initialScript ? <div className="max-h-60 overflow-y-auto whitespace-pre-wrap rounded-xl bg-zinc-950 p-4 text-2xl leading-relaxed">{initialScript}</div> : inline ? <p className="text-sm text-zinc-400">Select a script above to read while recording.</p> : <ProductScripts productId={product.id} />}
       {devices.length > 0 && <label className="block text-sm">Microphone<select disabled={recording || saving} value={deviceId} onChange={event => setDeviceId(event.target.value)} className="mt-1 w-full rounded-xl bg-zinc-800 p-2"><option value="">Default microphone</option>{devices.map(device => <option key={device.deviceId} value={device.deviceId}>{device.label || 'Microphone'}</option>)}</select></label>}
       <p role="status" className={`font-mono text-3xl ${recording ? 'text-rose-400' : 'text-zinc-200'}`}>{String(Math.floor(seconds / 60)).padStart(2, '0')}:{String(seconds % 60).padStart(2, '0')} {recording && <span className="text-sm">Recording</span>}</p>
-      <canvas ref={canvas} width={1000} height={180} aria-label="Audio waveform" className="w-full rounded-xl border border-zinc-700 bg-zinc-950" />
+      <div className="flex items-center gap-2 border border-zinc-700 rounded-t-lg bg-zinc-800 px-3 py-2 text-xs"><span className="font-semibold">Voiceover</span><span className="text-zinc-400">Mono · Microphone · Live waveform</span></div>
+      <canvas ref={canvas} width={1000} height={240} aria-label="Audio waveform" className="w-full rounded-xl border border-zinc-700 bg-zinc-950" />
       <label className="block text-xs text-zinc-400">Microphone level <meter min={0} max={100} low={10} high={90} optimum={60} value={level} className="w-full" /></label>
       {url && <audio controls src={url} className="w-full" onPlay={event => { if (duration && (event.currentTarget.currentTime < trimStart || event.currentTarget.currentTime >= trimEnd)) event.currentTarget.currentTime = trimStart; }} onTimeUpdate={event => { if (duration && event.currentTarget.currentTime >= trimEnd) event.currentTarget.pause(); }} />}
       {duration > 0 && !recording && <div className="grid grid-cols-2 gap-3 text-sm">
@@ -160,7 +181,7 @@ export default function VoiceRecorder({ product, onClose }: { product: { id: str
         {recording ? <button className={button} onClick={() => recorder.current?.stop()}>Stop recording</button> : <button disabled={saving} className={button} onClick={start}>{blob ? 'Record again' : 'Start recording'}</button>}
         {recording && <button className={button} onClick={() => { if (paused) recorder.current?.resume(); else recorder.current?.pause(); setPaused(!paused); }}>{paused ? 'Resume' : 'Pause'}</button>}
         <button className={button + ' bg-slate-700'} disabled={!blob || recording || saving || !!saved} onClick={save}>{saving ? 'Saving...' : 'Save to product'}</button>
-        <button className={button} disabled={recording || saving} onClick={onClose}>Close</button>
+        {!inline && <button className={button} disabled={recording || saving} onClick={onClose}>Close</button>}
       </div>
     </section>
   </div>;
